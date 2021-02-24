@@ -8,8 +8,13 @@ using Vector3 = UnityEngine.Vector3;
 
 public class BoardManager : MonoBehaviour
 {
-    private const float TILE_SIZE = 1.0f;
-    private const float TILE_OFFSET = 0.5f;
+    public static BoardManager Instance { set; get; }
+    private bool[,,] allowedMoves { set; get; }
+    
+    private const int FIRST_BOARD_HEIGHT = 3;
+    private const int SECOND_BOARD_HEIGHT = 6;
+    private const int FIRST_BOARD_OFFSET = 3;
+    private const int SECOND_BOARD_OFFSET = 6;
 
     private int selectionx = -1;
     private int selectionz = -1;
@@ -30,7 +35,7 @@ public class BoardManager : MonoBehaviour
     private void Update()
     {
         UpdateSelection();
-        DrawChessboard();
+        //DrawChessboard();
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -41,6 +46,7 @@ public class BoardManager : MonoBehaviour
                     //Select piece
                     setBoardCoordinates(selectiony,selectionz);
                     SelectPiece(selectionx,boardCoordinateY,boardCoordinateZ);
+                    selectedPiece.SetBoardPosition(selectionx,boardCoordinateY,boardCoordinateZ);
                 }
                 else
                 {
@@ -63,17 +69,26 @@ public class BoardManager : MonoBehaviour
         {
             return;
         }
+
         
         selectedPiece = Pieces[x, y, z];
+        
+        setBoardCoordinates(y,z);
+        selectedPiece.SetBoardPosition(x,boardCoordinateY,boardCoordinateZ);
+        
+        allowedMoves = Pieces[x, y, z].PossibleMove();
+        BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves,FIRST_BOARD_HEIGHT,FIRST_BOARD_OFFSET);
     }
 
     private void MovePiece(int x, int y, int z)
     {
         setBoardCoordinates(y,z);
-        if (selectedPiece.PossibleMove(x, boardCoordinateY, boardCoordinateZ))
+        if (allowedMoves[x,boardCoordinateY,boardCoordinateZ])
         {
+            
             Pieces[selectedPiece.CurrentX, selectedPiece.CurrentY, selectedPiece.CurrentZ] = null;
             selectedPiece.transform.position = new Vector3(x, y, z);
+            selectedPiece.SetPosition(x,y,z);
             Pieces[x, boardCoordinateY, boardCoordinateZ] = selectedPiece;
             selectedPiece = null;
             isWhiteTurn = !isWhiteTurn;
@@ -82,6 +97,7 @@ public class BoardManager : MonoBehaviour
         {
             selectedPiece = null;
         }
+        BoardHighlights.Instance.HideHighlights();
     }
 
     private void DrawChessboard()
@@ -90,8 +106,8 @@ public class BoardManager : MonoBehaviour
         Vector3 zLine = Vector3.forward * 8;
 
         Vector3 board1OffSet = Vector3.back / 2 + Vector3.left / 2 + Vector3.up / 4;
-        Vector3 board2OffSet = board1OffSet + Vector3.forward * 3 + Vector3.up * 3;
-        Vector3 board3OffSet = board1OffSet + Vector3.forward * 6 + Vector3.up * 6;
+        Vector3 board2OffSet = board1OffSet + Vector3.forward * FIRST_BOARD_OFFSET + Vector3.up * FIRST_BOARD_HEIGHT;
+        Vector3 board3OffSet = board1OffSet + Vector3.forward * SECOND_BOARD_OFFSET + Vector3.up * SECOND_BOARD_HEIGHT;
 
         
         for (int i = 0; i <= 8; i++)
@@ -125,6 +141,7 @@ public class BoardManager : MonoBehaviour
             }
         }
 
+        /*
         if (selectionx >= 0 && selectionx <= 7 && selectionz >= 0 && selectiony == 0 && selectionz <= 7)
         {
             Debug.DrawLine(board1OffSet + Vector3.forward * selectionz + Vector3.right * selectionx,
@@ -146,14 +163,14 @@ public class BoardManager : MonoBehaviour
         }
         else if (selectionx >= 0 && selectionx <= 7 && selectionz >= 6 && selectiony == 6 && selectionz <= 13)
         {
-            Debug.DrawLine(board1OffSet + Vector3.forward * selectionz + Vector3.right * selectionx + Vector3.up * 6,
-                board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * (selectionx + 1) + Vector3.up * 6
+            Debug.DrawLine(board1OffSet + Vector3.forward * selectionz + Vector3.right * selectionx + Vector3.up * SECOND_BOARD_HEIGHT,
+                board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * (selectionx + 1) + Vector3.up * SECOND_BOARD_HEIGHT
             );
-            Debug.DrawLine(board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * selectionx + Vector3.up * 6,
-                board1OffSet + Vector3.forward * selectionz + Vector3.right * (selectionx+1) + Vector3.up * 6
+            Debug.DrawLine(board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * selectionx + Vector3.up * SECOND_BOARD_HEIGHT,
+                board1OffSet + Vector3.forward * selectionz + Vector3.right * (selectionx+1) + Vector3.up * SECOND_BOARD_HEIGHT
             );
         }
-        
+        */
     }
 
     private void UpdateSelection()
@@ -170,6 +187,18 @@ public class BoardManager : MonoBehaviour
             selectionx = (int) (hit.point.x + 0.5);
             selectionz = (int) (hit.point.z + 0.5);
             selectiony = (int) (hit.point.y + 0.5);
+            if (selectiony >= 0 && selectiony < FIRST_BOARD_HEIGHT)
+            {
+                selectiony = 0;
+            }
+            else if(selectiony >= FIRST_BOARD_HEIGHT && selectiony < SECOND_BOARD_HEIGHT)
+            {
+                selectiony = FIRST_BOARD_HEIGHT;
+            }
+            else if (selectiony > 0)
+            {
+                selectiony = SECOND_BOARD_HEIGHT;
+            }
         }
         else
         {
@@ -209,19 +238,20 @@ public class BoardManager : MonoBehaviour
                 boardCoordinateY = 0;
                 boardCoordinateZ = z;
                 break;
-            case 3:
+            case FIRST_BOARD_HEIGHT:
                 boardCoordinateY = 1;
-                boardCoordinateZ = z-3;
+                boardCoordinateZ = z-FIRST_BOARD_OFFSET;
                 break;
-            case 6:
+            case SECOND_BOARD_HEIGHT:
                 boardCoordinateY = 2;
-                boardCoordinateZ = z-6;
+                boardCoordinateZ = z-SECOND_BOARD_OFFSET;
                 break;
         }
     }
 
     private void Start()
     {
+        Instance = this;
         InitPieces();
     }
 
@@ -232,29 +262,29 @@ public class BoardManager : MonoBehaviour
         
         //Spawn black pieces
         //King
-        SpawnPiece(0,3,6,13,false);
+        SpawnPiece(0,4,SECOND_BOARD_HEIGHT,7 + SECOND_BOARD_OFFSET,false);
         //Queen
-        SpawnPiece(1, 4,6,13,false);
+        SpawnPiece(1, 3,SECOND_BOARD_HEIGHT,7 + SECOND_BOARD_OFFSET,false);
         //Rooks
-        SpawnPiece(2, 0,6,13,false);
-        SpawnPiece(2, 7,6,13,false);
+        SpawnPiece(2, 0,SECOND_BOARD_HEIGHT,7 + SECOND_BOARD_OFFSET,false);
+        SpawnPiece(2, 7,SECOND_BOARD_HEIGHT,7 + SECOND_BOARD_OFFSET,false);
         //Bishops
-        SpawnPiece(3, 2,6,13,false);
-        SpawnPiece(3, 5,6,13,false);
+        SpawnPiece(3, 2,SECOND_BOARD_HEIGHT,7 + SECOND_BOARD_OFFSET,false);
+        SpawnPiece(3, 5,SECOND_BOARD_HEIGHT,7 + SECOND_BOARD_OFFSET,false);
         //Knights
-        SpawnPiece(4, 1,6,13,false);
-        SpawnPiece(4, 6,6,13,false);
+        SpawnPiece(4, 1,SECOND_BOARD_HEIGHT,7 + SECOND_BOARD_OFFSET,false);
+        SpawnPiece(4, 6,SECOND_BOARD_HEIGHT,7 + SECOND_BOARD_OFFSET,false);
         //Pawns
         for (int i = 0; i < 8; i++)
         {
-            SpawnPiece(5, i,6,12);
+            SpawnPiece(5, i,SECOND_BOARD_HEIGHT,6 + SECOND_BOARD_OFFSET);
         }
         
         //Spawn white pieces
         //King
-        SpawnPiece(6, 3,0,0);
+        SpawnPiece(6, 4,0,0);
         //Queen
-        SpawnPiece(7, 4,0,0);
+        SpawnPiece(7, 3,0,0);
         //Rooks
         SpawnPiece(8, 0,0,0);
         SpawnPiece(8, 7,0,0);

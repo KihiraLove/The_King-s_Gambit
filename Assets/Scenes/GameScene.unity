@@ -157,6 +157,7 @@ GameObject:
   m_Component:
   - component: {fileID: 551906230}
   - component: {fileID: 551906229}
+  - component: {fileID: 551906231}
   m_Layer: 0
   m_Name: Center
   m_TagString: Untagged
@@ -189,6 +190,7 @@ MonoBehaviour:
   - {fileID: 1028868664329696, guid: 1c0f2faf14460a5478057fd4e0575576, type: 3}
   - {fileID: 1992623236052302, guid: 85ad2c556fdbd5747ac7f5f67f10e59b, type: 3}
   - {fileID: 1006356879557798, guid: 391882f14be491c40962add653844907, type: 3}
+  isWhiteTurn: 1
 --- !u!4 &551906230
 Transform:
   m_ObjectHideFlags: 0
@@ -206,6 +208,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &551906231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551906228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b347ae988f1d43444893f27173214e5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highlightPrefab: {fileID: 3140303561752839707, guid: 6019cb77b2342a04588e73b53a8b848f,
+    type: 3}
 --- !u!1001 &589289174
 PrefabInstance:
   m_ObjectHideFlags: 0

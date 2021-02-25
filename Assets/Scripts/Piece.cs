@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Piece : MonoBehaviour
 {
-    
+    public bool hasMoved = false;
     public int CurrentX { set; get; }
     public int CurrentY { set; get; }
     public int CurrentZ { set; get; }

@@ -19,9 +19,6 @@ public class BoardManager : MonoBehaviour
     private int selectionx = -1;
     private int selectionz = -1;
     private int selectiony = -1;
-
-    private int boardCoordinateY;
-    private int boardCoordinateZ;
     
     public Piece[,,] Pieces { set; get; }
     private Piece selectedPiece;
@@ -32,145 +29,176 @@ public class BoardManager : MonoBehaviour
     private Quaternion orientation ;
 
     public bool isWhiteTurn = true;
-    private void Update()
-    {
-        UpdateSelection();
-        //DrawChessboard();
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (selectionx >= 0 && selectiony >= 0 && selectionz >= 0)
-            {
-                if (selectedPiece == null)
-                {
-                    //Select piece
-                    setBoardCoordinates(selectiony,selectionz);
-                    SelectPiece(selectionx,boardCoordinateY,boardCoordinateZ);
-                    selectedPiece.SetBoardPosition(selectionx,boardCoordinateY,boardCoordinateZ);
-                }
-                else
-                {
-                    //Move;
-                    MovePiece(selectionx,selectiony,selectionz);
-                }
-                
-            }
-        }
-    }
+    
 
     private void SelectPiece(int x, int y, int z)
     {
+        //Debug.Log(x.ToString() + " " + y.ToString() + " " + z.ToString());
         if (Pieces[x, y, z] == null)
         {
+            Debug.Log("asd");
+            selectedPiece = null;
             return;
         }
 
         if (Pieces[x, y, z].isWhite != isWhiteTurn)
         {
+            Debug.Log("asd");
+            selectedPiece = null;
             return;
         }
 
+        bool hasMove = false;
+        allowedMoves = Pieces[x, y, z].PossibleMove();
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                for (int k = 0; k < 8; k++)
+                {
+                    if (allowedMoves[i, j, k])
+                    {
+                        hasMove = true;
+                    }
+                }
+            }
+        }
+        
+        if (!hasMove)
+        {
+            
+            return;
+        }
+        
         
         selectedPiece = Pieces[x, y, z];
-        
-        setBoardCoordinates(y,z);
-        selectedPiece.SetBoardPosition(x,boardCoordinateY,boardCoordinateZ);
-        
-        allowedMoves = Pieces[x, y, z].PossibleMove();
+        Debug.Log(selectedPiece);
         BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves,FIRST_BOARD_HEIGHT,FIRST_BOARD_OFFSET);
     }
 
     private void MovePiece(int x, int y, int z)
     {
-        setBoardCoordinates(y,z);
-        if (allowedMoves[x,boardCoordinateY,boardCoordinateZ])
+        int [] boardCoordinate  = getBoardCoordinates(y,z);
+        if (selectedPiece.GetType() == typeof(King) && (x == selectedPiece.BoardX-2 || x == selectedPiece.BoardX+2) && !selectedPiece.hasMoved && allowedMoves[x,boardCoordinate[0],boardCoordinate[1]])
         {
+            Castle(x);
+            return;
+        }
+        if (allowedMoves[x,boardCoordinate[0],boardCoordinate[1]])
+        {
+
+            Piece c = Pieces[x, boardCoordinate[0], boardCoordinate[1]];
+            if (c != null && c.isWhite != isWhiteTurn)
+            {
+                if (c.GetType() == typeof(King))
+                {
+                    EndGame();
+                    return;
+                }
+                activeChessPieces.Remove(c.gameObject);
+                Destroy(c.gameObject);
+            }
+            Pieces[selectedPiece.BoardX, selectedPiece.BoardY, selectedPiece.BoardZ] = null;
+
+            selectedPiece.hasMoved = true;
             
-            Pieces[selectedPiece.CurrentX, selectedPiece.CurrentY, selectedPiece.CurrentZ] = null;
             selectedPiece.transform.position = new Vector3(x, y, z);
+            
             selectedPiece.SetPosition(x,y,z);
-            Pieces[x, boardCoordinateY, boardCoordinateZ] = selectedPiece;
+            
+            selectedPiece.SetBoardPosition(x,boardCoordinate[0],boardCoordinate[1]);
+            
+            Pieces[x, boardCoordinate[0], boardCoordinate[1]] = selectedPiece;
+            
             selectedPiece = null;
+            
             isWhiteTurn = !isWhiteTurn;
+            
         }
         else
         {
             selectedPiece = null;
         }
+        
         BoardHighlights.Instance.HideHighlights();
     }
 
-    private void DrawChessboard()
+    private void Castle( int x)
     {
-        Vector3 xLine = Vector3.right * 8;
-        Vector3 zLine = Vector3.forward * 8;
+        if (x < selectedPiece.BoardX)
+        {
+            Pieces[selectedPiece.BoardX, selectedPiece.BoardY, selectedPiece.BoardZ] = null;
 
-        Vector3 board1OffSet = Vector3.back / 2 + Vector3.left / 2 + Vector3.up / 4;
-        Vector3 board2OffSet = board1OffSet + Vector3.forward * FIRST_BOARD_OFFSET + Vector3.up * FIRST_BOARD_HEIGHT;
-        Vector3 board3OffSet = board1OffSet + Vector3.forward * SECOND_BOARD_OFFSET + Vector3.up * SECOND_BOARD_HEIGHT;
-
-        
-        for (int i = 0; i <= 8; i++)
-        {
-            Vector3 start = (Vector3.forward * i) + board1OffSet;
-            Debug.DrawLine(start,start + xLine);
-            for (int j = 0; j <= 8; j++)
-            {
-                start = (Vector3.right * i) + board1OffSet;
-                Debug.DrawLine(start,start + zLine);
-            }
-        }
-        for (int i = 0; i <= 8; i++)
-        {
-            Vector3 start = (Vector3.forward * i) + board2OffSet;
-            Debug.DrawLine(start,start + xLine);
-            for (int j = 0; j <= 8; j++)
-            {
-                start = (Vector3.right * i) + board2OffSet;
-                Debug.DrawLine(start,start + zLine);
-            }
-        }
-        for (int i = 0; i <= 8; i++)
-        {
-            Vector3 start = (Vector3.forward * i) + board3OffSet;
-            Debug.DrawLine(start,start + xLine);
-            for (int j = 0; j <= 8; j++)
-            {
-                start = (Vector3.right * i) + board3OffSet;
-                Debug.DrawLine(start,start + zLine);
-            }
-        }
-
-        /*
-        if (selectionx >= 0 && selectionx <= 7 && selectionz >= 0 && selectiony == 0 && selectionz <= 7)
-        {
-            Debug.DrawLine(board1OffSet + Vector3.forward * selectionz + Vector3.right * selectionx,
-                            board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * (selectionx + 1)
-                            );
-            Debug.DrawLine(board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * selectionx,
-                board1OffSet + Vector3.forward * selectionz + Vector3.right * (selectionx+1)
-            );
+            selectedPiece.transform.position = new Vector3(x, selectedPiece.CurrentY, selectedPiece.CurrentZ);
             
+            selectedPiece.SetPosition(x,selectedPiece.CurrentY,selectedPiece.CurrentZ);
+            selectedPiece.SetBoardPosition(x,selectedPiece.BoardY,selectedPiece.BoardZ);
+            selectedPiece.hasMoved = true;
+            Pieces[x, selectedPiece.BoardY,selectedPiece.BoardZ] = selectedPiece;
+            
+            selectedPiece = Pieces[0, selectedPiece.BoardY, selectedPiece.BoardZ];
+            selectedPiece.transform.position = new Vector3(x+1, selectedPiece.CurrentY, selectedPiece.CurrentZ);
+            
+            selectedPiece.SetPosition(x+1,selectedPiece.CurrentY,selectedPiece.CurrentZ);
+            selectedPiece.SetBoardPosition(x+1,selectedPiece.BoardY,selectedPiece.BoardZ);
+            selectedPiece.hasMoved = true;
+            Pieces[x-1, selectedPiece.BoardY,selectedPiece.BoardZ] = selectedPiece;
+            
+            
+            
+            selectedPiece = null;
+            isWhiteTurn = !isWhiteTurn;
         }
-        else if (selectionx >= 0 && selectionx <= 7 && selectionz >= 3 && selectiony == 3 && selectionz <= 10)
+        else
         {
-            Debug.DrawLine(board1OffSet + Vector3.forward * selectionz + Vector3.right * selectionx + Vector3.up * 3,
-                board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * (selectionx + 1) + Vector3.up * 3
-            );
-            Debug.DrawLine(board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * selectionx + Vector3.up * 3,
-                board1OffSet + Vector3.forward * selectionz + Vector3.right * (selectionx+1) + Vector3.up * 3
-            );
+            Pieces[selectedPiece.BoardX, selectedPiece.BoardY, selectedPiece.BoardZ] = null;
+
+            selectedPiece.transform.position = new Vector3(x, selectedPiece.CurrentY, selectedPiece.CurrentZ);
+            
+            selectedPiece.SetPosition(x,selectedPiece.CurrentY,selectedPiece.CurrentZ);
+            selectedPiece.SetBoardPosition(x,selectedPiece.BoardY,selectedPiece.BoardZ);
+            selectedPiece.hasMoved = true;
+            Pieces[x, selectedPiece.BoardY,selectedPiece.BoardZ] = selectedPiece;
+            
+            selectedPiece = Pieces[7, selectedPiece.BoardY, selectedPiece.BoardZ];
+            selectedPiece.transform.position = new Vector3(x-1, selectedPiece.CurrentY, selectedPiece.CurrentZ);
+            
+            selectedPiece.SetPosition(x-1,selectedPiece.CurrentY,selectedPiece.CurrentZ);
+            selectedPiece.SetBoardPosition(x-1,selectedPiece.BoardY,selectedPiece.BoardZ);
+            selectedPiece.hasMoved = true;
+            Pieces[x-1, selectedPiece.BoardY,selectedPiece.BoardZ] = selectedPiece;
+            
+            
+            
+            selectedPiece = null;
+            isWhiteTurn = !isWhiteTurn;
         }
-        else if (selectionx >= 0 && selectionx <= 7 && selectionz >= 6 && selectiony == 6 && selectionz <= 13)
+        BoardHighlights.Instance.HideHighlights();
+    }
+
+    private void EndGame()
+    {
+        if (isWhiteTurn)
         {
-            Debug.DrawLine(board1OffSet + Vector3.forward * selectionz + Vector3.right * selectionx + Vector3.up * SECOND_BOARD_HEIGHT,
-                board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * (selectionx + 1) + Vector3.up * SECOND_BOARD_HEIGHT
-            );
-            Debug.DrawLine(board1OffSet + Vector3.forward * (selectionz + 1) + Vector3.right * selectionx + Vector3.up * SECOND_BOARD_HEIGHT,
-                board1OffSet + Vector3.forward * selectionz + Vector3.right * (selectionx+1) + Vector3.up * SECOND_BOARD_HEIGHT
-            );
+            Debug.Log("White won!");
         }
-        */
+        else
+        {
+            Debug.Log("Black won!");
+        }
+
+        foreach (GameObject go in activeChessPieces)
+        {
+            Destroy(go);
+        }
+
+        isWhiteTurn = true;
+        
+        BoardHighlights.Instance.HideHighlights();
+        InitPieces();
+        
+
+
     }
 
     private void UpdateSelection()
@@ -184,18 +212,19 @@ public class BoardManager : MonoBehaviour
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25.0f,
             LayerMask.GetMask("ChessBoards")))
         {
+            int tempY = (int) (hit.point.y + 0.5);
             selectionx = (int) (hit.point.x + 0.5);
             selectionz = (int) (hit.point.z + 0.5);
-            selectiony = (int) (hit.point.y + 0.5);
-            if (selectiony >= 0 && selectiony < FIRST_BOARD_HEIGHT)
+            
+            if (tempY >= 0 && tempY < FIRST_BOARD_HEIGHT)
             {
                 selectiony = 0;
             }
-            else if(selectiony >= FIRST_BOARD_HEIGHT && selectiony < SECOND_BOARD_HEIGHT)
+            else if(tempY >= FIRST_BOARD_HEIGHT && tempY < SECOND_BOARD_HEIGHT)
             {
                 selectiony = FIRST_BOARD_HEIGHT;
             }
-            else if (selectiony > 0)
+            else if (tempY > 0)
             {
                 selectiony = SECOND_BOARD_HEIGHT;
             }
@@ -207,11 +236,9 @@ public class BoardManager : MonoBehaviour
             selectiony = -1;
         }
         
-        //Debug.Log(selectionx.ToString() + " " + selectiony.ToString() + " " + selectionz.ToString());
     }
 
-    private void SpawnPiece(int index, int x,int y,int z,bool forward = true)
-    {
+    private void SpawnPiece(int index, int x,int y,int z,bool forward = true) {
         if (!forward)
         {
             orientation = Quaternion.Euler(0, 180, 0);
@@ -223,36 +250,66 @@ public class BoardManager : MonoBehaviour
         GameObject piece = Instantiate(chessPiecesPrefabs[index],new Vector3(x,y,z),orientation) as GameObject;
         piece.transform.SetParent(transform);
 
-        setBoardCoordinates(y,z);
-        Pieces[x, boardCoordinateY, boardCoordinateZ] = piece.GetComponent<Piece>();
-        Pieces[x, boardCoordinateY, boardCoordinateZ].SetPosition(x, boardCoordinateY, boardCoordinateZ);
+        int [] boardCoordinate  = getBoardCoordinates(y,z);
+        Pieces[x, boardCoordinate[0], boardCoordinate[1]] = piece.GetComponent<Piece>();
+        Pieces[x, boardCoordinate[0], boardCoordinate[1]].SetPosition(x, y, z);
+        Pieces[x, boardCoordinate[0], boardCoordinate[1]].SetBoardPosition(x,boardCoordinate[0], boardCoordinate[1]);
         //;
         activeChessPieces.Add(piece);
     }
 
-    private void setBoardCoordinates(int y, int z)
+    private int [] getBoardCoordinates(int y, int z)
     {
-        switch (y)
+        int []retval = new int[2];
+        if (y >= 0 && y < FIRST_BOARD_HEIGHT)
         {
-            case 0:
-                boardCoordinateY = 0;
-                boardCoordinateZ = z;
-                break;
-            case FIRST_BOARD_HEIGHT:
-                boardCoordinateY = 1;
-                boardCoordinateZ = z-FIRST_BOARD_OFFSET;
-                break;
-            case SECOND_BOARD_HEIGHT:
-                boardCoordinateY = 2;
-                boardCoordinateZ = z-SECOND_BOARD_OFFSET;
-                break;
+            retval[0] = 0;
+            retval[1] = z;
         }
+        else if (y >= FIRST_BOARD_HEIGHT && y < SECOND_BOARD_HEIGHT)
+        {
+            retval[0] = 1;
+            retval[1] = z-FIRST_BOARD_OFFSET;
+        }
+        else if(y > 0)
+        {
+            retval[0] = 2;
+            retval[1] = z-SECOND_BOARD_OFFSET;
+        }
+
+        return retval;
     }
 
     private void Start()
     {
         Instance = this;
         InitPieces();
+    }
+    
+    private void Update()
+    {
+        UpdateSelection();
+        //DrawChessboard();
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (selectionx >= 0 && selectiony >= 0 && selectionz >= 0)
+            {
+                if (selectedPiece == null)
+                {
+                    //Select piece
+                    int [] boardCoordinate  = getBoardCoordinates(selectiony,selectionz);
+                    SelectPiece(selectionx,boardCoordinate[0], boardCoordinate[1]);
+                    
+                }
+                else
+                {
+                    //Move;
+                    MovePiece(selectionx,selectiony,selectionz);
+                }
+                
+            }
+        }
     }
 
     private void InitPieces()

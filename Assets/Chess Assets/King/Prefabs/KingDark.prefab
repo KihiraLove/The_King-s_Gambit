@@ -93,6 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f732f859342691d4a8f5a54581861223, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasMoved: 0
   isWhite: 0
 --- !u!64 &194044882015127247
 MeshCollider:

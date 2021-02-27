@@ -15,6 +15,7 @@ public abstract class Piece : MonoBehaviour
     
     public bool isWhite;
 
+    //Position is coordinates in unity
     public void SetPosition(int x, int y, int z)
     {
         CurrentX = x;
@@ -22,6 +23,7 @@ public abstract class Piece : MonoBehaviour
         CurrentZ = z;
     }
 
+    //Boardposition is the place in a three dimensional array size of 8 x 3 x 8 its the three board digitally reconstructed.
     public void SetBoardPosition(int x, int y, int z)
     {
         BoardX = x;
@@ -29,6 +31,7 @@ public abstract class Piece : MonoBehaviour
         BoardZ = z;
     }
 
+    //Returns an array of possible moves
     public virtual bool[,,] PossibleMove()
     {
         return new bool[8,3,8];

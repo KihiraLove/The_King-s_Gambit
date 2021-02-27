@@ -11,14 +11,17 @@ public class BoardManager : MonoBehaviour
     public static BoardManager Instance { set; get; }
     private bool[,,] allowedMoves { set; get; }
     
+    //Offset of boards
     private const int FIRST_BOARD_HEIGHT = 3;
     private const int SECOND_BOARD_HEIGHT = 6;
     private const int FIRST_BOARD_OFFSET = 3;
     private const int SECOND_BOARD_OFFSET = 6;
 
+    //Coordinate of your mouse
     private int selectionx = -1;
     private int selectionz = -1;
     private int selectiony = -1;
+    
     
     public Piece[,,] Pieces { set; get; }
     private Piece selectedPiece;
@@ -26,28 +29,33 @@ public class BoardManager : MonoBehaviour
     public List<GameObject> chessPiecesPrefabs;
     private List<GameObject> activeChessPieces;
     
+    
+    //It works when spawning the knight
     private Quaternion orientation ;
 
     public bool isWhiteTurn = true;
     
 
+    //Piece selection
     private void SelectPiece(int x, int y, int z)
     {
-        //Debug.Log(x.ToString() + " " + y.ToString() + " " + z.ToString());
+        //Check if it is a piece you clicking
         if (Pieces[x, y, z] == null)
         {
-            Debug.Log("asd");
+           
             selectedPiece = null;
             return;
         }
 
+        //Check if it is your piece
         if (Pieces[x, y, z].isWhite != isWhiteTurn)
         {
-            Debug.Log("asd");
+           
             selectedPiece = null;
             return;
         }
 
+        //Check if your selected piece have any move at all
         bool hasMove = false;
         allowedMoves = Pieces[x, y, z].PossibleMove();
         for (int i = 0; i < 8; i++)
@@ -64,6 +72,7 @@ public class BoardManager : MonoBehaviour
             }
         }
         
+        //If it has no move then you cant select it
         if (!hasMove)
         {
             
@@ -71,25 +80,29 @@ public class BoardManager : MonoBehaviour
         }
         
         
+        //Select the piece and show the allowed moves
         selectedPiece = Pieces[x, y, z];
-        Debug.Log(selectedPiece);
         BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves,FIRST_BOARD_HEIGHT,FIRST_BOARD_OFFSET);
     }
 
+    //Move the selected piece to position
     private void MovePiece(int x, int y, int z)
     {
+        //Check if the move is castle and then castle if it is
         int [] boardCoordinate  = getBoardCoordinates(y,z);
         if (selectedPiece.GetType() == typeof(King) && (x == selectedPiece.BoardX-2 || x == selectedPiece.BoardX+2) && !selectedPiece.hasMoved && allowedMoves[x,boardCoordinate[0],boardCoordinate[1]])
         {
             Castle(x);
             return;
         }
+        //If the move is highlighted move the piece
         if (allowedMoves[x,boardCoordinate[0],boardCoordinate[1]])
         {
 
             Piece c = Pieces[x, boardCoordinate[0], boardCoordinate[1]];
             if (c != null && c.isWhite != isWhiteTurn)
             {
+                //If the king is destroyed then reset the game
                 if (c.GetType() == typeof(King))
                 {
                     EndGame();
@@ -176,6 +189,7 @@ public class BoardManager : MonoBehaviour
         BoardHighlights.Instance.HideHighlights();
     }
 
+    //Reset the game
     private void EndGame()
     {
         if (isWhiteTurn)
@@ -201,6 +215,7 @@ public class BoardManager : MonoBehaviour
 
     }
 
+    //This function sets the coordinates of selection
     private void UpdateSelection()
     {
         if (!Camera.main)
@@ -238,6 +253,7 @@ public class BoardManager : MonoBehaviour
         
     }
 
+    
     private void SpawnPiece(int index, int x,int y,int z,bool forward = true) {
         if (!forward)
         {

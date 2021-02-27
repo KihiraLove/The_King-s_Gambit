@@ -15,6 +15,7 @@ public class BoardHighlights : MonoBehaviour
         highlights = new List<GameObject>();
     }
 
+    //Creates a new highlight prefab
     private GameObject GetHighlightObject()
     {
         GameObject go = highlights.Find(g => !g.activeSelf);
@@ -28,6 +29,7 @@ public class BoardHighlights : MonoBehaviour
         return go;
     }
 
+    //Gets a three dimensional array and highlights allowed moves
     public void HighlightAllowedMoves(bool[,,] moves,int boardOffsetY,int boardOffsetZ)
     {
         for (int i = 0; i < 3; i++)
@@ -47,6 +49,7 @@ public class BoardHighlights : MonoBehaviour
         }
     }
 
+    //Clears all highlights
     public void HideHighlights()
     {
         foreach (GameObject go in highlights)

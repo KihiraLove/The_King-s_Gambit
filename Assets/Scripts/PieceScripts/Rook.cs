@@ -188,6 +188,7 @@ public class Rook : Piece
         return r;
     }
     
+    //Helper function checks if place is valid and puts it in the array
     public void RookMove(int x, int y, int z, ref bool[,,] r)
     {
         Piece c;

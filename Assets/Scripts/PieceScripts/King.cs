@@ -39,6 +39,7 @@ public class King : Piece
         return r;
     }
 
+    //It shows and allows the castle move for the king
     private void ShowCastleMove(ref bool[,,] r)
     {
         Piece[] backRow = new Piece[8];

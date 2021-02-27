@@ -72,6 +72,7 @@ public class Knight : Piece
         return r;
     }
 
+    //Helper function checks if place is valid and puts it in the array
     public void KnightMove(int x, int y, int z, ref bool[,,] r)
     {
         Piece c;

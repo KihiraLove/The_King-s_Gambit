@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Queen : Piece
 {
+    //Basically a crtl + c of bishop and rooks move
     public override bool[,,] PossibleMove()
     {
         bool[,,] r = new bool[8, 3, 8];
@@ -544,7 +545,7 @@ public class Queen : Piece
         
         return r;
     }
-    
+    //Helper function checks if place is valid and puts it in the array
     public void RookMove(int x, int y, int z, ref bool[,,] r)
     {
         Piece c;

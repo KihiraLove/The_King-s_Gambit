@@ -22,7 +22,7 @@ public class CameraController : MonoBehaviour {
         _y = angles.x;
     }
 
-    private void LateUpdate (){
+    private void Update (){
         if (Input.GetMouseButton(0)){
             _x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
             _y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
@@ -33,7 +33,9 @@ public class CameraController : MonoBehaviour {
         distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel")*5, distanceMin, distanceMax);
         
         RaycastHit hit;
-        if (Physics.Linecast (target.position, transform.position, out hit)){
+
+        int _layerMask = 1 << 9;
+        if (Physics.Linecast (target.position, transform.position, out hit, _layerMask)){
             distance -=  hit.distance;
         }
         

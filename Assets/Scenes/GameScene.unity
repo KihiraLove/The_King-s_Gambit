@@ -473,12 +473,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1509881476}
   distance: 5
-  xSpeed: 60
-  ySpeed: 120
+  xSpeed: 100
+  ySpeed: 100
   yMinLimit: -20
   yMaxLimit: 80
   distanceMin: 0.5
-  distanceMax: 15
+  distanceMax: 20
+  _cursorTexture: {fileID: 2800000, guid: 91cbf5dcf75db934689f4a6d68437630, type: 3}
 --- !u!1 &1242776498 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1857998089916902, guid: 5b856ec4f8f8cb84f861f8f8a026c288,

@@ -9,64 +9,64 @@ public class Knight : Piece
         bool[,,] r = new bool[8, 3, 8];
         
         //ForwardLeft
-        KnightMove(BoardX-1,BoardY,BoardZ +2,ref r);
+        KnightMove((int)position.x-1,(int)position.y,(int)position.z +2,ref r);
         
         //ForwardRight
-        KnightMove(BoardX+1,BoardY,BoardZ +2,ref r);
+        KnightMove((int)position.x+1,(int)position.y,(int)position.z +2,ref r);
         
         //LeftForward
-        KnightMove(BoardX-2,BoardY,BoardZ +1,ref r);
+        KnightMove((int)position.x-2,(int)position.y,(int)position.z +1,ref r);
         
         //LeftBackward
-        KnightMove(BoardX-2,BoardY,BoardZ -1,ref r);
+        KnightMove((int)position.x-2,(int)position.y,(int)position.z -1,ref r);
         
         //BackwardLeft
-        KnightMove(BoardX-1,BoardY,BoardZ -2,ref r);
+        KnightMove((int)position.x-1,(int)position.y,(int)position.z -2,ref r);
         
         //BackwardRight
-        KnightMove(BoardX+1,BoardY,BoardZ -2,ref r);
+        KnightMove((int)position.x+1,(int)position.y,(int)position.z -2,ref r);
         
         //RightForward
-        KnightMove(BoardX+2,BoardY,BoardZ +1,ref r);
+        KnightMove((int)position.x+2,(int)position.y,(int)position.z +1,ref r);
         
         //RightBackward
-        KnightMove(BoardX+2,BoardY,BoardZ -1,ref r);
+        KnightMove((int)position.x+2,(int)position.y,(int)position.z -1,ref r);
 
         //ForwardUp
-        KnightMove(BoardX,BoardY +1,BoardZ+2,ref r);
+        KnightMove((int)position.x,(int)position.y +1,(int)position.z+2,ref r);
         //RightUp
-        KnightMove(BoardX + 2,BoardY +1,BoardZ,ref r);
+        KnightMove((int)position.x + 2,(int)position.y +1,(int)position.z,ref r);
         //LeftUp
-        KnightMove(BoardX - 2,BoardY +1,BoardZ,ref r);
+        KnightMove((int)position.x - 2,(int)position.y +1,(int)position.z,ref r);
         //BackwardUp
-        KnightMove(BoardX,BoardY +1,BoardZ-2,ref r);
+        KnightMove((int)position.x,(int)position.y +1,(int)position.z-2,ref r);
         
         //ForwardDown
-        KnightMove(BoardX,BoardY -1,BoardZ+2,ref r);
+        KnightMove((int)position.x,(int)position.y -1,(int)position.z+2,ref r);
         //RightDown
-        KnightMove(BoardX + 2,BoardY -1,BoardZ,ref r);
+        KnightMove((int)position.x + 2,(int)position.y -1,(int)position.z,ref r);
         //LeftDown
-        KnightMove(BoardX - 2,BoardY -1,BoardZ,ref r);
+        KnightMove((int)position.x - 2,(int)position.y -1,(int)position.z,ref r);
         //BackwardDown
-        KnightMove(BoardX,BoardY -1,BoardZ-2,ref r);
+        KnightMove((int)position.x,(int)position.y -1,(int)position.z-2,ref r);
         
         //ForwardUp2
-        KnightMove(BoardX,BoardY +2,BoardZ+1,ref r);
+        KnightMove((int)position.x,(int)position.y +2,(int)position.z+1,ref r);
         //RightUp2
-        KnightMove(BoardX + 1,BoardY +2,BoardZ,ref r);
+        KnightMove((int)position.x + 1,(int)position.y +2,(int)position.z,ref r);
         //LeftUp2
-        KnightMove(BoardX - 1,BoardY +2,BoardZ,ref r);
+        KnightMove((int)position.x - 1,(int)position.y +2,(int)position.z,ref r);
         //BackwardUp2
-        KnightMove(BoardX,BoardY +2,BoardZ-1,ref r);
+        KnightMove((int)position.x,(int)position.y +2,(int)position.z-1,ref r);
         
         //ForwardDown2
-        KnightMove(BoardX,BoardY -2,BoardZ+1,ref r);
+        KnightMove((int)position.x,(int)position.y -2,(int)position.z+1,ref r);
         //RightDown2
-        KnightMove(BoardX + 1,BoardY -2,BoardZ,ref r);
+        KnightMove((int)position.x + 1,(int)position.y -2,(int)position.z,ref r);
         //LeftDown2
-        KnightMove(BoardX - 1,BoardY -2,BoardZ,ref r);
+        KnightMove((int)position.x - 1,(int)position.y -2,(int)position.z,ref r);
         //BackwardDown2
-        KnightMove(BoardX,BoardY -2,BoardZ-1,ref r);
+        KnightMove((int)position.x,(int)position.y -2,(int)position.z-1,ref r);
         
         
         return r;

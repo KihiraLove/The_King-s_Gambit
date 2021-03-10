@@ -10,7 +10,7 @@ public class Rook : Piece
         Piece c;
         int i;
         //Move right
-        i = BoardX;
+        i = (int)position.x;
         while (true)
         {
             i++;
@@ -19,22 +19,22 @@ public class Rook : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[i, BoardY, BoardZ];
+            c = BoardManager.Instance.Pieces[i, (int)position.y, (int)position.z];
             if (c == null)
             {
-                r[i, BoardY, BoardZ] = true;
+                r[i, (int)position.y, (int)position.z] = true;
             }
             else
             {
                 if (c.isWhite != isWhite)
                 {
-                    r[i, BoardY, BoardZ] = true;
+                    r[i, (int)position.y, (int)position.z] = true;
                 }
                 break;
             }
         }
         //Move left
-        i = BoardX;
+        i = (int)position.x;
         while (true)
         {
             i--;
@@ -43,23 +43,23 @@ public class Rook : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[i, BoardY, BoardZ];
+            c = BoardManager.Instance.Pieces[i, (int)position.y, (int)position.z];
             if (c == null)
             {
-                r[i, BoardY, BoardZ] = true;
+                r[i, (int)position.y, (int)position.z] = true;
             }
             else
             {
                 if (c.isWhite != isWhite)
                 {
-                    r[i, BoardY, BoardZ] = true;
+                    r[i, (int)position.y, (int)position.z] = true;
                 }
                 
                 break;
             }
         }
         //Move forward
-        i = BoardZ;
+        i = (int)position.z;
         while (true)
         {
             i++;
@@ -68,23 +68,23 @@ public class Rook : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[BoardX, BoardY, i];
+            c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y, i];
             if (c == null)
             {
-                r[BoardX, BoardY, i] = true;
+                r[(int)position.x, (int)position.y, i] = true;
             }
             else
             {
                 
                 if (c.isWhite != isWhite)
                 {
-                    r[BoardX, BoardY, i] = true;
+                    r[(int)position.x, (int)position.y, i] = true;
                 }
                 break;
             }
         }
         //Move backward
-        i = BoardZ;
+        i = (int)position.z;
         while (true)
         {
             i--;
@@ -93,22 +93,22 @@ public class Rook : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[BoardX, BoardY, i];
+            c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y, i];
             if (c == null)
             {
-                r[BoardX, BoardY, i] = true;
+                r[(int)position.x, (int)position.y, i] = true;
             }
             else 
             {
                 if (c.isWhite != isWhite)
                 {
-                    r[BoardX, BoardY, i] = true;
+                    r[(int)position.x, (int)position.y, i] = true;
                 }
                 break;
             }
         }
         //Move up
-        i = BoardY;
+        i = (int)position.y;
         while (true)
         {
             i++;
@@ -117,23 +117,23 @@ public class Rook : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[BoardX, i, BoardZ];
+            c = BoardManager.Instance.Pieces[(int)position.x, i, (int)position.z];
             if (c == null)
             {
-                r[BoardX, i, BoardZ] = true;
+                r[(int)position.x, i, (int)position.z] = true;
             }
             else
             {
                 
                 if (c.isWhite != isWhite)
                 {
-                    r[BoardX, i, BoardZ] = true;
+                    r[(int)position.x, i, (int)position.z] = true;
                 }
                 break;
             }
         }
         //Move down
-        i = BoardY;
+        i = (int)position.y;
         while (true)
         {
             i--;
@@ -142,16 +142,16 @@ public class Rook : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[BoardX, i, BoardZ];
+            c = BoardManager.Instance.Pieces[(int)position.x, i, (int)position.z];
             if (c == null)
             {
-                r[BoardX, i, BoardZ] = true;
+                r[(int)position.x, i, (int)position.z] = true;
             }
             else 
             {
                 if (c.isWhite != isWhite)
                 {
-                    r[BoardX, i, BoardZ] = true;
+                    r[(int)position.x, i, (int)position.z] = true;
                 }
                     
                 break;
@@ -161,28 +161,28 @@ public class Rook : Piece
         
         
         //Move in diagonal1 up
-        RookMove(BoardX +1, BoardY + 1, BoardZ, ref r);
-        RookMove(BoardX -1, BoardY + 1, BoardZ, ref r);
-        RookMove(BoardX, BoardY + 1, BoardZ + 1, ref r);
-        RookMove(BoardX, BoardY + 1, BoardZ - 1, ref r);
+        RookMove((int)position.x +1, (int)position.y + 1, (int)position.z, ref r);
+        RookMove((int)position.x -1, (int)position.y + 1, (int)position.z, ref r);
+        RookMove((int)position.x, (int)position.y + 1, (int)position.z + 1, ref r);
+        RookMove((int)position.x, (int)position.y + 1, (int)position.z - 1, ref r);
         
         //Move in diagonal2 up
-        RookMove(BoardX +2, BoardY + 2, BoardZ, ref r);
-        RookMove(BoardX -2, BoardY + 2, BoardZ, ref r);
-        RookMove(BoardX, BoardY + 2, BoardZ + 2, ref r);
-        RookMove(BoardX, BoardY + 2, BoardZ - 2, ref r);
+        RookMove((int)position.x +2, (int)position.y + 2, (int)position.z, ref r);
+        RookMove((int)position.x -2, (int)position.y + 2, (int)position.z, ref r);
+        RookMove((int)position.x, (int)position.y + 2, (int)position.z + 2, ref r);
+        RookMove((int)position.x, (int)position.y + 2, (int)position.z - 2, ref r);
         
         //Move in diagonal1 down
-        RookMove(BoardX +1, BoardY - 1, BoardZ, ref r);
-        RookMove(BoardX -1, BoardY - 1, BoardZ, ref r);
-        RookMove(BoardX, BoardY - 1, BoardZ + 1, ref r);
-        RookMove(BoardX, BoardY - 1, BoardZ - 1, ref r);
+        RookMove((int)position.x +1, (int)position.y - 1, (int)position.z, ref r);
+        RookMove((int)position.x -1, (int)position.y - 1, (int)position.z, ref r);
+        RookMove((int)position.x, (int)position.y - 1, (int)position.z + 1, ref r);
+        RookMove((int)position.x, (int)position.y - 1, (int)position.z - 1, ref r);
         
         //Move in diagonal2 down
-        RookMove(BoardX +2, BoardY - 2, BoardZ, ref r);
-        RookMove(BoardX -2, BoardY - 2, BoardZ, ref r);
-        RookMove(BoardX, BoardY - 2, BoardZ + 2, ref r);
-        RookMove(BoardX, BoardY - 2, BoardZ - 2, ref r);
+        RookMove((int)position.x +2, (int)position.y - 2, (int)position.z, ref r);
+        RookMove((int)position.x -2, (int)position.y - 2, (int)position.z, ref r);
+        RookMove((int)position.x, (int)position.y - 2, (int)position.z + 2, ref r);
+        RookMove((int)position.x, (int)position.y - 2, (int)position.z - 2, ref r);
         
         
         return r;

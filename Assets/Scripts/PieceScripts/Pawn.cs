@@ -14,104 +14,104 @@ public class Pawn : Piece
         if (isWhite)
         {
             //Diagonal Left (Piece not on the left of the board and not in the end)
-            if (BoardX != 0 && BoardZ != 7)
+            if ((int)position.x != 0 && (int)position.z != 7)
             {
-                c = BoardManager.Instance.Pieces[BoardX - 1, BoardY, BoardZ + 1];
+                c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y, (int)position.z + 1];
                 
                 //Diagonal left same board
                 if (c != null && !c.isWhite)
                 {
-                    r[BoardX - 1, BoardY, BoardZ + 1] = true;
+                    r[(int)position.x - 1, (int)position.y, (int)position.z + 1] = true;
                 }
                 
                 //Diagonal left lower board
-                if (BoardY != 0)
+                if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX - 1, BoardY -1, BoardZ + 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y -1, (int)position.z + 1];
                     if (c != null && !c.isWhite)
                     {
-                        r[BoardX -1, BoardY -1, BoardZ + 1] = true;
+                        r[(int)position.x -1, (int)position.y -1, (int)position.z + 1] = true;
                     }
                 }
                 //Diagonal left higher board
-                if (BoardY != 2)
+                if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX - 1, BoardY +1, BoardZ + 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y +1, (int)position.z + 1];
                     if (c != null && !c.isWhite)
                     {
-                        r[BoardX -1, BoardY +1, BoardZ + 1] = true;
+                        r[(int)position.x -1, (int)position.y +1, (int)position.z + 1] = true;
                     }
                 }
                 
             }
 
             //Diagonal Right
-            if (BoardX != 7 && BoardZ != 7)
+            if ((int)position.x != 7 && (int)position.z != 7)
             {
-                c = BoardManager.Instance.Pieces[BoardX + 1, BoardY, BoardZ + 1];
+                c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y, (int)position.z + 1];
 
                 //Diagonal right same board
                 if (c != null && !c.isWhite)
                 {
-                    r[BoardX + 1, BoardY, BoardZ + 1] = true;
+                    r[(int)position.x + 1, (int)position.y, (int)position.z + 1] = true;
                 }
                 
                 //Diagonal right lower board
-                if (BoardY != 0)
+                if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX + 1, BoardY -1, BoardZ + 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y -1, (int)position.z + 1];
                     if (c != null && !c.isWhite)
                     {
-                        r[BoardX +1, BoardY -1, BoardZ + 1] = true;
+                        r[(int)position.x +1, (int)position.y -1, (int)position.z + 1] = true;
                     }
                 }
 
                 //Diagonal right higher board
-                if (BoardY != 2)
+                if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX + 1, BoardY +1, BoardZ + 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y +1, (int)position.z + 1];
                     if (c != null && !c.isWhite)
                     {
-                        r[BoardX +1, BoardY +1, BoardZ + 1] = true;
+                        r[(int)position.x +1, (int)position.y +1, (int)position.z + 1] = true;
                     }
                 }
             }
 
             //Middle
-            if (BoardZ != 7)
+            if ((int)position.z != 7)
             {
-                c = BoardManager.Instance.Pieces[BoardX, BoardY, BoardZ + 1];
+                c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y, (int)position.z + 1];
                 if (c == null)
                 {
-                    r[BoardX, BoardY, BoardZ + 1] = true;
+                    r[(int)position.x, (int)position.y, (int)position.z + 1] = true;
                 }
 
-                if (BoardY != 0)
+                if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX, BoardY -1, BoardZ + 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z + 1];
                     if (c == null)
                     {
-                        r[BoardX, BoardY -1, BoardZ + 1] = true;
+                        r[(int)position.x, (int)position.y -1, (int)position.z + 1] = true;
                     }
                     
-                    c = BoardManager.Instance.Pieces[BoardX, BoardY -1, BoardZ];
+                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z];
                     if (c == null)
                     {
-                        r[BoardX, BoardY -1, BoardZ] = true;
+                        r[(int)position.x, (int)position.y -1, (int)position.z] = true;
                     }
                 }
 
-                if (BoardY != 2)
+                if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX, BoardY +1, BoardZ + 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y +1, (int)position.z + 1];
                     if (c == null)
                     {
-                        r[BoardX, BoardY + 1, BoardZ + 1] = true;
+                        r[(int)position.x, (int)position.y + 1, (int)position.z + 1] = true;
                     }
-                    c = BoardManager.Instance.Pieces[BoardX, BoardY + 1, BoardZ];
+                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y + 1, (int)position.z];
                     if (c == null)
                     {
-                        r[BoardX, BoardY + 1, BoardZ] = true;
+                        r[(int)position.x, (int)position.y + 1, (int)position.z] = true;
                     }
                     
                 }
@@ -119,111 +119,111 @@ public class Pawn : Piece
             }
 
             //Middle on first move
-            if (BoardZ == 1)
+            if ((int)position.z == 1)
             {
-                r[BoardX, BoardY, BoardZ + 2] = true;
-                r[BoardX, 2, BoardZ] = true;
-                r[BoardX, 2, BoardZ + 2] = true;
+                r[(int)position.x, (int)position.y, (int)position.z + 2] = true;
+                r[(int)position.x, 2, (int)position.z] = true;
+                r[(int)position.x, 2, (int)position.z + 2] = true;
             }
         }
         else //Black team moves
         {
             //Diagonal Left (Piece not on the left of the board and not in the end)
-            if (BoardX != 0 && BoardZ != 0)
+            if ((int)position.x != 0 && (int)position.z != 0)
             {
-                c = BoardManager.Instance.Pieces[BoardX - 1, BoardY, BoardZ - 1];
+                c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y, (int)position.z - 1];
 
                 //Diagonal left same board
                 if (c != null && c.isWhite)
                 {
-                    r[BoardX - 1, BoardY, BoardZ - 1] = true;
+                    r[(int)position.x - 1, (int)position.y, (int)position.z - 1] = true;
                 }
                 //Diagonal left lower board
-                if (BoardY != 0)
+                if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX - 1, BoardY -1, BoardZ - 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y -1, (int)position.z - 1];
                     if (c != null && c.isWhite)
                     {
-                        r[BoardX -1, BoardY -1, BoardZ - 1] = true;
+                        r[(int)position.x -1, (int)position.y -1, (int)position.z - 1] = true;
                     }
                 }
 
                 //Diagonal left higher board
-                if (BoardY != 2)
+                if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX - 1, BoardY +1, BoardZ - 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y +1, (int)position.z - 1];
                     if (c != null && c.isWhite)
                     {
-                        r[BoardX -1, BoardY +1, BoardZ - 1] = true;
+                        r[(int)position.x -1, (int)position.y +1, (int)position.z - 1] = true;
                     }
                 }
             }
 
             //Diagonal Right
-            if (BoardX != 7 && BoardZ != 0)
+            if ((int)position.x != 7 && (int)position.z != 0)
             {
-                c = BoardManager.Instance.Pieces[BoardX + 1, BoardY, BoardZ - 1];
+                c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y, (int)position.z - 1];
                 //Diagonal right same board
                 if (c != null && c.isWhite)
                 {
-                    r[BoardX + 1, BoardY, BoardZ - 1] = true;
+                    r[(int)position.x + 1, (int)position.y, (int)position.z - 1] = true;
                 }
                 //Diagonal right lower board
-                if (BoardY != 0)
+                if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX + 1, BoardY -1, BoardZ - 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y -1, (int)position.z - 1];
                     if (c != null && c.isWhite)
                     {
-                        r[BoardX +1, BoardY -1, BoardZ - 1] = true;
+                        r[(int)position.x +1, (int)position.y -1, (int)position.z - 1] = true;
                     }
                 }
 
                 //Diagonal right higher board
-                if (BoardY != 2)
+                if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX + 1, BoardY +1, BoardZ - 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y +1, (int)position.z - 1];
                     if (c != null && c.isWhite)
                     {
-                        r[BoardX +1, BoardY +1, BoardZ - 1] = true;
+                        r[(int)position.x +1, (int)position.y +1, (int)position.z - 1] = true;
                     }
                 }
             }
             
             //Middle
-            if (BoardZ != 0)
+            if ((int)position.z != 0)
             {
-                c = BoardManager.Instance.Pieces[BoardX, BoardY, BoardZ - 1];
+                c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y, (int)position.z - 1];
                 if (c == null)
                 {
-                    r[BoardX, BoardY, BoardZ - 1] = true;
+                    r[(int)position.x, (int)position.y, (int)position.z - 1] = true;
                 }
 
-                if (BoardY != 0)
+                if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX, BoardY -1, BoardZ - 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z - 1];
                     if (c == null)
                     {
-                        r[BoardX, BoardY -1, BoardZ - 1] = true;
+                        r[(int)position.x, (int)position.y -1, (int)position.z - 1] = true;
                     }
                     
-                    c = BoardManager.Instance.Pieces[BoardX, BoardY -1, BoardZ];
+                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z];
                     if (c == null)
                     {
-                        r[BoardX, BoardY -1, BoardZ] = true;
+                        r[(int)position.x, (int)position.y -1, (int)position.z] = true;
                     }
                 }
 
-                if (BoardY != 2)
+                if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[BoardX, BoardY +1, BoardZ - 1];
+                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y +1, (int)position.z - 1];
                     if (c == null)
                     {
-                        r[BoardX, BoardY + 1, BoardZ - 1] = true;
+                        r[(int)position.x, (int)position.y + 1, (int)position.z - 1] = true;
                     }
-                    c = BoardManager.Instance.Pieces[BoardX, BoardY + 1, BoardZ];
+                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y + 1, (int)position.z];
                     if (c == null)
                     {
-                        r[BoardX, BoardY + 1, BoardZ] = true;
+                        r[(int)position.x, (int)position.y + 1, (int)position.z] = true;
                     }
                     
                 }
@@ -231,11 +231,11 @@ public class Pawn : Piece
             }
 
             //Middle on first move
-            if (BoardZ == 6)
+            if ((int)position.z == 6)
             {
-                r[BoardX, BoardY, BoardZ - 2] = true;
-                r[BoardX, 0, BoardZ] = true;
-                r[BoardX, 0, BoardZ - 2] = true;
+                r[(int)position.x, (int)position.y, (int)position.z - 2] = true;
+                r[(int)position.x, 0, (int)position.z] = true;
+                r[(int)position.x, 0, (int)position.z - 2] = true;
             }
         }
         return r;

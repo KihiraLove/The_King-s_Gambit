@@ -90,7 +90,7 @@ public class BoardManager : MonoBehaviour
     {
         //Check if the move is castle and then castle if it is
         int [] boardCoordinate  = getBoardCoordinates(y,z);
-        if (selectedPiece.GetType() == typeof(King) && (x == selectedPiece.BoardX-2 || x == selectedPiece.BoardX+2) && !selectedPiece.hasMoved && allowedMoves[x,boardCoordinate[0],boardCoordinate[1]])
+        if (selectedPiece.GetType() == typeof(King) && (x == (int)selectedPiece.position.x-2 || x == (int)selectedPiece.position.x+2) && !selectedPiece.hasMoved && allowedMoves[x,boardCoordinate[0],boardCoordinate[1]])
         {
             Castle(x);
             return;
@@ -111,15 +111,15 @@ public class BoardManager : MonoBehaviour
                 activeChessPieces.Remove(c.gameObject);
                 Destroy(c.gameObject);
             }
-            Pieces[selectedPiece.BoardX, selectedPiece.BoardY, selectedPiece.BoardZ] = null;
+            Pieces[(int)selectedPiece.position.x, (int)selectedPiece.position.y, (int)selectedPiece.position.z] = null;
 
             selectedPiece.hasMoved = true;
             
             selectedPiece.transform.position = new Vector3(x, y, z);
             
-            selectedPiece.SetPosition(x,y,z);
+            selectedPiece.SetPosition(new Vector3(x, y, z));
             
-            selectedPiece.SetBoardPosition(x,boardCoordinate[0],boardCoordinate[1]);
+            
             
             Pieces[x, boardCoordinate[0], boardCoordinate[1]] = selectedPiece;
             
@@ -138,24 +138,25 @@ public class BoardManager : MonoBehaviour
 
     private void Castle( int x)
     {
-        if (x < selectedPiece.BoardX)
+        /*
+        if (x < (int)selectedPiece.position.x)
         {
-            Pieces[selectedPiece.BoardX, selectedPiece.BoardY, selectedPiece.BoardZ] = null;
+            Pieces[(int)selectedPiece.position.x, (int)selectedPiece.position.y, (int)selectedPiece.position.z] = null;
 
             selectedPiece.transform.position = new Vector3(x, selectedPiece.CurrentY, selectedPiece.CurrentZ);
             
             selectedPiece.SetPosition(x,selectedPiece.CurrentY,selectedPiece.CurrentZ);
-            selectedPiece.SetBoardPosition(x,selectedPiece.BoardY,selectedPiece.BoardZ);
+            selectedPiece.SetBoardPosition(x,(int)selectedPiece.position.y,(int)selectedPiece.position.z);
             selectedPiece.hasMoved = true;
-            Pieces[x, selectedPiece.BoardY,selectedPiece.BoardZ] = selectedPiece;
+            Pieces[x, (int)selectedPiece.position.y,(int)selectedPiece.position.z] = selectedPiece;
             
-            selectedPiece = Pieces[0, selectedPiece.BoardY, selectedPiece.BoardZ];
+            selectedPiece = Pieces[0, (int)selectedPiece.position.y, (int)selectedPiece.position.z];
             selectedPiece.transform.position = new Vector3(x+1, selectedPiece.CurrentY, selectedPiece.CurrentZ);
             
             selectedPiece.SetPosition(x+1,selectedPiece.CurrentY,selectedPiece.CurrentZ);
-            selectedPiece.SetBoardPosition(x+1,selectedPiece.BoardY,selectedPiece.BoardZ);
+            selectedPiece.SetBoardPosition(x+1,(int)selectedPiece.position.y,(int)selectedPiece.position.z);
             selectedPiece.hasMoved = true;
-            Pieces[x-1, selectedPiece.BoardY,selectedPiece.BoardZ] = selectedPiece;
+            Pieces[x-1, (int)selectedPiece.position.y,(int)selectedPiece.position.z] = selectedPiece;
             
             
             
@@ -164,29 +165,29 @@ public class BoardManager : MonoBehaviour
         }
         else
         {
-            Pieces[selectedPiece.BoardX, selectedPiece.BoardY, selectedPiece.BoardZ] = null;
+            Pieces[(int)selectedPiece.position.x, (int)selectedPiece.position.y, (int)selectedPiece.position.z] = null;
 
             selectedPiece.transform.position = new Vector3(x, selectedPiece.CurrentY, selectedPiece.CurrentZ);
             
             selectedPiece.SetPosition(x,selectedPiece.CurrentY,selectedPiece.CurrentZ);
-            selectedPiece.SetBoardPosition(x,selectedPiece.BoardY,selectedPiece.BoardZ);
+            selectedPiece.SetBoardPosition(x,(int)selectedPiece.position.y,(int)selectedPiece.position.z);
             selectedPiece.hasMoved = true;
-            Pieces[x, selectedPiece.BoardY,selectedPiece.BoardZ] = selectedPiece;
+            Pieces[x, (int)selectedPiece.position.y,(int)selectedPiece.position.z] = selectedPiece;
             
-            selectedPiece = Pieces[7, selectedPiece.BoardY, selectedPiece.BoardZ];
+            selectedPiece = Pieces[7, (int)selectedPiece.position.y, (int)selectedPiece.position.z];
             selectedPiece.transform.position = new Vector3(x-1, selectedPiece.CurrentY, selectedPiece.CurrentZ);
             
             selectedPiece.SetPosition(x-1,selectedPiece.CurrentY,selectedPiece.CurrentZ);
-            selectedPiece.SetBoardPosition(x-1,selectedPiece.BoardY,selectedPiece.BoardZ);
+            selectedPiece.SetBoardPosition(x-1,(int)selectedPiece.position.y,(int)selectedPiece.position.z);
             selectedPiece.hasMoved = true;
-            Pieces[x-1, selectedPiece.BoardY,selectedPiece.BoardZ] = selectedPiece;
+            Pieces[x-1, (int)selectedPiece.position.y,(int)selectedPiece.position.z] = selectedPiece;
             
             
             
             selectedPiece = null;
             isWhiteTurn = !isWhiteTurn;
         }
-        BoardHighlights.Instance.HideHighlights();
+        BoardHighlights.Instance.HideHighlights();*/
     }
 
     //Reset the game
@@ -211,8 +212,6 @@ public class BoardManager : MonoBehaviour
         BoardHighlights.Instance.HideHighlights();
         InitPieces();
         
-
-
     }
 
     //This function sets the coordinates of selection
@@ -227,9 +226,9 @@ public class BoardManager : MonoBehaviour
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25.0f,
             LayerMask.GetMask("ChessBoards")))
         {
-            int tempY = (int) (hit.point.y + 0.5);
-            selectionx = (int) (hit.point.x + 0.5);
-            selectionz = (int) (hit.point.z + 0.5);
+            int tempY =  (int)(hit.point.y + 0.5);
+            selectionx =  (int)(hit.point.x + 0.5);
+            selectionz =  (int)(hit.point.z + 0.5);
             
             if (tempY >= 0 && tempY < FIRST_BOARD_HEIGHT)
             {
@@ -268,8 +267,7 @@ public class BoardManager : MonoBehaviour
 
         int [] boardCoordinate  = getBoardCoordinates(y,z);
         Pieces[x, boardCoordinate[0], boardCoordinate[1]] = piece.GetComponent<Piece>();
-        Pieces[x, boardCoordinate[0], boardCoordinate[1]].SetPosition(x, y, z);
-        Pieces[x, boardCoordinate[0], boardCoordinate[1]].SetBoardPosition(x,boardCoordinate[0], boardCoordinate[1]);
+        Pieces[x, boardCoordinate[0], boardCoordinate[1]].SetPosition(new Vector3(x,y,z));
         //;
         activeChessPieces.Add(piece);
     }
@@ -299,7 +297,7 @@ public class BoardManager : MonoBehaviour
     private void Start()
     {
         Instance = this;
-        InitPieces();
+        //InitPieces();
     }
     
     private void Update()

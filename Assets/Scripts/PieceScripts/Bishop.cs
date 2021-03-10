@@ -12,8 +12,8 @@ public class Bishop : Piece
         int i, j;
         
         //Forward Left
-        i = BoardX;
-        j = BoardZ;
+        i = (int)position.x;
+        j = (int)position.z;
         while (true)
         {
             i--;
@@ -23,16 +23,16 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, BoardY, j];
+            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
-                r[i, BoardY, j] = true;
+                r[i, (int)position.y, j] = true;
             }
             else 
             {
                 if (isWhite != c.isWhite)
                 {
-                    r[i, BoardY, j] = true;
+                    r[i, (int)position.y, j] = true;
                 }
                 
                 break;
@@ -40,8 +40,8 @@ public class Bishop : Piece
             
         }
         //Forward Right
-        i = BoardX;
-        j = BoardZ;
+        i = (int)position.x;
+        j = (int)position.z;
         while (true)
         {
             i++;
@@ -51,16 +51,16 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, BoardY, j];
+            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
-                r[i, BoardY, j] = true;
+                r[i, (int)position.y, j] = true;
             }
             else 
             {
                 if (isWhite != c.isWhite)
                 {
-                    r[i, BoardY, j] = true;
+                    r[i, (int)position.y, j] = true;
                 }
                 
                 break;
@@ -68,8 +68,8 @@ public class Bishop : Piece
             
         }
         //Backward Left
-        i = BoardX;
-        j = BoardZ;
+        i = (int)position.x;
+        j = (int)position.z;
         while (true)
         {
             i--;
@@ -79,16 +79,16 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, BoardY, j];
+            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
-                r[i, BoardY, j] = true;
+                r[i, (int)position.y, j] = true;
             }
             else 
             {
                 if (isWhite != c.isWhite)
                 {
-                    r[i, BoardY, j] = true;
+                    r[i, (int)position.y, j] = true;
                 }
                 
                 break;
@@ -96,8 +96,8 @@ public class Bishop : Piece
             
         }
         //Backward Right
-        i = BoardX;
-        j = BoardZ;
+        i = (int)position.x;
+        j = (int)position.z;
         while (true)
         {
             i++;
@@ -107,16 +107,16 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, BoardY, j];
+            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
-                r[i, BoardY, j] = true;
+                r[i, (int)position.y, j] = true;
             }
             else 
             {
                 if (isWhite != c.isWhite)
                 {
-                    r[i, BoardY, j] = true;
+                    r[i, (int)position.y, j] = true;
                 }
                 
                 break;
@@ -126,9 +126,9 @@ public class Bishop : Piece
 
         int k;
         //Forward Left Up
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int)position.x;
+        j = (int)position.z;
+        k = (int)position.y;
         while (true)
         {
             i--;
@@ -156,9 +156,9 @@ public class Bishop : Piece
             
         }
         //Forward Right Up
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int)position.x;
+        j = (int)position.z;
+        k = (int)position.y;
         while (true)
         {
             i++;
@@ -186,9 +186,9 @@ public class Bishop : Piece
             
         }
         //Backward Left Up
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int)position.x;
+        j = (int)position.z;
+        k = (int)position.y;
         while (true)
         {
             i--;
@@ -216,9 +216,9 @@ public class Bishop : Piece
             
         }
         //Backward Right Up
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int)position.x;
+        j = (int)position.z;
+        k = (int)position.y;
         while (true)
         {
             i++;
@@ -247,9 +247,9 @@ public class Bishop : Piece
         }
         
         //Forward Left Down
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int)position.x;
+        j = (int)position.z;
+        k = (int)position.y;
         while (true)
         {
             i--;
@@ -277,9 +277,9 @@ public class Bishop : Piece
             
         }
         //Forward Right Down
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int)position.x;
+        j = (int)position.z;
+        k = (int)position.y;
         while (true)
         {
             i++;
@@ -307,9 +307,9 @@ public class Bishop : Piece
             
         }
         //Backward Left Down
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int)position.x;
+        j = (int)position.z;
+        k = (int)position.y;
         while (true)
         {
             i--;
@@ -337,9 +337,9 @@ public class Bishop : Piece
             
         }
         //Backward Right down
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int)position.x;
+        j = (int)position.z;
+        k = (int)position.y;
         while (true)
         {
             i++;

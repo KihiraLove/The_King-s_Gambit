@@ -205,4 +205,15 @@ public class Rook : Piece
             }
         }
     }
+    public override char GETPieceCode()
+    {
+        if (isWhite)
+        {
+            return 'R';
+        }
+        else
+        {
+            return 'r';
+        }
+    }
 }

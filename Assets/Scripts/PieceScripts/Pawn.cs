@@ -8,7 +8,7 @@ public class Pawn : Piece
     public override bool[,,] PossibleMove()
     {
         bool[,,] r = new bool[8, 3, 8];
-        Piece c, c2;
+        Piece c;
     
         //White team moves
         if (isWhite)
@@ -239,5 +239,17 @@ public class Pawn : Piece
             }
         }
         return r;
+    }
+
+    public override char GETPieceCode()
+    {
+        if (isWhite)
+        {
+            return 'P';
+        }
+        else
+        {
+            return 'p';
+        }
     }
 }

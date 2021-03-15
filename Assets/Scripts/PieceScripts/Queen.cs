@@ -562,4 +562,16 @@ public class Queen : Piece
             }
         }
     }
+    
+    public override char GETPieceCode()
+    {
+        if (isWhite)
+        {
+            return 'Q';
+        }
+        else
+        {
+            return 'q';
+        }
+    }
 }

@@ -369,4 +369,16 @@ public class Bishop : Piece
         
         return r;
     }
+    
+    public override char GETPieceCode()
+    {
+        if (isWhite)
+        {
+            return 'B';
+        }
+        else
+        {
+            return 'b';
+        }
+    }
 }

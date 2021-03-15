@@ -22,4 +22,9 @@ public abstract class Piece : MonoBehaviour
     {
         return new bool[8,3,8];
     }
+
+    public virtual char GETPieceCode()
+    {
+        return 'x';
+    }
 }

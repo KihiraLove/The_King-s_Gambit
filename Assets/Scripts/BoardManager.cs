@@ -305,25 +305,7 @@ public class BoardManager : MonoBehaviour
         UpdateSelection();
         //DrawChessboard();
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (selectionx >= 0 && selectiony >= 0 && selectionz >= 0)
-            {
-                if (selectedPiece == null)
-                {
-                    //Select piece
-                    int [] boardCoordinate  = getBoardCoordinates(selectiony,selectionz);
-                    SelectPiece(selectionx,boardCoordinate[0], boardCoordinate[1]);
-                    
-                }
-                else
-                {
-                    //Move;
-                    MovePiece(selectionx,selectiony,selectionz);
-                }
-                
-            }
-        }
+         
     }
 
     private void InitPieces()

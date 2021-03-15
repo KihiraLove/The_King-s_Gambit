@@ -72,4 +72,15 @@ public class King : Piece
         }
     }
     
+    public override char GETPieceCode()
+    {
+        if (isWhite)
+        {
+            return 'K';
+        }
+        else
+        {
+            return 'k';
+        }
+    }
 }

@@ -89,5 +89,17 @@ public class Knight : Piece
             }
         }
     }
+    
+    public override char GETPieceCode()
+    {
+        if (isWhite)
+        {
+            return 'N';
+        }
+        else
+        {
+            return 'n';
+        }
+    }
 }
 

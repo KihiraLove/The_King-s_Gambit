@@ -387,7 +387,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -452,13 +452,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.20854335, y: -0, z: -0, w: 0.9780132}
-  m_LocalPosition: {x: 0, y: 4.13, z: -7.89}
+  m_LocalRotation: {x: 0.24733722, y: 0, z: 0, w: 0.96892947}
+  m_LocalPosition: {x: 3.5, y: 8.02, z: -8.78}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 24.074001, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 28.64, y: 0, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -473,12 +473,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1509881476}
   distance: 5
-  xSpeed: 60
-  ySpeed: 120
+  xSpeed: 100
+  ySpeed: 100
   yMinLimit: -20
   yMaxLimit: 80
   distanceMin: 0.5
-  distanceMax: 15
+  distanceMax: 20
+  _cursorTexture: {fileID: 2800000, guid: 91cbf5dcf75db934689f4a6d68437630, type: 3}
 --- !u!1 &1242776498 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1857998089916902, guid: 5b856ec4f8f8cb84f861f8f8a026c288,
@@ -516,13 +517,27 @@ GameObject:
   - component: {fileID: 1509881476}
   - component: {fileID: 1509881475}
   - component: {fileID: 1509881474}
-  m_Layer: 0
+  - component: {fileID: 1509881473}
+  m_Layer: 9
   m_Name: CameraPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1509881473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1509881472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f291f0a5d5f2c61409239838d1ff0320, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 1
 --- !u!23 &1509881474
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -578,7 +593,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1509881472}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.5, y: 3, z: 4.5}
+  m_LocalPosition: {x: 3.5, y: 3, z: 4.4999995}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

@@ -25,7 +25,7 @@ public class CameraController : MonoBehaviour {
     }
 
     private void Update (){
-        if (Input.GetMouseButton(0)){
+        if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift)){
             _x += Input.GetAxis("Mouse X") * xSpeed * 0.02f;
             _y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
             _y = ClampAngle(_y, yMinLimit, yMaxLimit);

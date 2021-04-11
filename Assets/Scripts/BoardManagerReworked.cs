@@ -1,12 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
-using System.Security.Cryptography;
-using UnityEditor;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Serialization;
-using UnityEngine.UIElements;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
@@ -17,10 +13,9 @@ public class BoardManagerReworked : MonoBehaviour
     public Vector3 board1Offset;
     public Vector3 board2Offset;
     public Vector3 board3Offset;
-    public static BoardManagerReworked Instance { set; get; }
 
     public bool whiteTurn;
-    
+    private string startBoardState = "RNBQKBNR/PPPPPPPP/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/pppppppp/rnbqkbnr\n b kq kq";
     
     public List<GameObject> chessPiecePrefabs;
     public GameObject chessBoardPrefab;
@@ -30,52 +25,58 @@ public class BoardManagerReworked : MonoBehaviour
 
     public Vector3 mousePosition;
 
-    private Piece selectedPiece;
+    private Piece _selectedPiece;
     // Start is called before the first frame update
     void Start()
     {
-        Instance = this;
         Initialize();
-        print(getBoardState());
+        //GenerateBoardFromBoardState("RNBQKBNR/PPPPPPPP/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/pppppppp/rnbqkbnr\n w kq kq");
+        //invalidBoardState(startBoardState);
+        //print(getBoardState());
     }
 
     // Update is called once per frame
     void Update()
     {
-        UpdateSelection();
         if (Input.GetMouseButtonDown(0))
         {
+            
+            print(mousePosition);
             if (mousePosition.x > -98)
             {
                 
-                if (selectedPiece == null && GetPiece(mousePosition) != null && GetPiece(mousePosition).isWhite == whiteTurn )
+                if (_selectedPiece == null && GetPiece(mousePosition) != null && GetPiece(mousePosition).isWhite == whiteTurn )
                 {
                     //Select piece
-                    selectedPiece = GetPiece(mousePosition);
+                    _selectedPiece = GetPiece(mousePosition);
 
                 }
-                else if(selectedPiece != null && (GetPiece(mousePosition) == null || GetPiece(mousePosition).isWhite != whiteTurn))
+                else if(_selectedPiece != null && (GetPiece(mousePosition) == null || GetPiece(mousePosition).isWhite != whiteTurn))
                 {
                     //Move;
-                    MovePiece(selectedPiece.position,new Vector3(mousePosition.x,mousePosition.y,mousePosition.z),(int)mousePosition.y);
-                    selectedPiece = null;
+                    MovePiece(_selectedPiece.position,new Vector3(mousePosition.x,mousePosition.y,mousePosition.z),(int)mousePosition.y);
+                    _selectedPiece = null;
                     
                 }
                 else
                 {
-                    selectedPiece = null;
+                    _selectedPiece = null;
                 }
-                
-                
             }
         }
     }
-    
+
+    private void FixedUpdate()
+    {
+        UpdateSelection();
+        
+    }
+
     private void Initialize()
     {
         SpawnBoards();
         SpawnAllPieces();
-        whiteTurn = true;
+        
     }
     private void SpawnBoards()
     {
@@ -91,10 +92,10 @@ public class BoardManagerReworked : MonoBehaviour
         board3.GetComponent<BoardData>().boardNumber = 3;
     }
 
-    private void SpawnPiece(int index, Vector3 position,Vector3 offset ,int board,bool forward = true)
+    private void SpawnPiece(int index, Vector3 position,int board)
     {
         Quaternion orientation;
-        if (!forward)
+        if (index <= 5)
         {
             orientation = Quaternion.Euler(0, 180, 0);
         }
@@ -102,7 +103,8 @@ public class BoardManagerReworked : MonoBehaviour
         {
             orientation = Quaternion.identity;
         }
-        
+
+        Vector3 offset = GETBoardOffSet(board);
         GameObject piece = Instantiate(chessPiecePrefabs[index],position+offset,orientation);
         piece.transform.SetParent(transform);
         
@@ -117,46 +119,7 @@ public class BoardManagerReworked : MonoBehaviour
     {
         _activeChessPieces = new List<GameObject>();
         Pieces = new Piece[8,3,8];
-        
-        //Spawn black pieces
-        //King
-        SpawnPiece(0,new Vector3(4,0,7),board3Offset,2,false);
-        //Queen
-        SpawnPiece(1,new Vector3(3,0,7),board3Offset,2,false);
-        //Rooks
-        SpawnPiece(4,new Vector3(0,0,7),board3Offset,2,false);
-        SpawnPiece(4,new Vector3(7,0,7),board3Offset,2,false);
-        //Bishops
-        SpawnPiece(2,new Vector3(2,0,7),board3Offset,2,false);
-        SpawnPiece(2,new Vector3(5,0,7),board3Offset,2,false);
-        //Knights
-        SpawnPiece(3,new Vector3(1,0,7),board3Offset,2,false);
-        SpawnPiece(3,new Vector3(6,0,7),board3Offset,2,false);
-        //Pawns
-        for (int i = 0; i < 8; i++)
-        {
-            SpawnPiece(5,new Vector3(i,0,6),board3Offset,2,false);
-        }
-        
-        //Spawn white pieces
-        //King
-        SpawnPiece(6,new Vector3(4,0,0),board1Offset,0,false);
-        //Queen
-        SpawnPiece(7,new Vector3(3,0,0),board1Offset,0,false);
-        //Rooks
-        SpawnPiece(10,new Vector3(0,0,0),board1Offset,0,false);
-        SpawnPiece(10,new Vector3(7,0,0),board1Offset,0,false);
-        //Bishops
-        SpawnPiece(8,new Vector3(2,0,0),board1Offset,0,false);
-        SpawnPiece(8,new Vector3(5,0,0),board1Offset,0,false);
-        //Knights
-        SpawnPiece(9,new Vector3(1,0,0),board1Offset,0,true);
-        SpawnPiece(9,new Vector3(6,0,0),board1Offset,0,true);
-        //Pawns
-        for (int i = 0; i < 8; i++)
-        {
-            SpawnPiece(11,new Vector3(i,0,1),board1Offset,0,false);
-        }
+        GenerateBoardFromBoardState(startBoardState);
     }
 
     private ref Piece GetPiece(Vector3 position)
@@ -241,14 +204,17 @@ public class BoardManagerReworked : MonoBehaviour
         if (retval.y >= board1Offset.y && retval.y < board2Offset.y)
         {
             retval = retval - board1Offset;
+            retval.y = 0;
         }
         else if (retval.y >= board2Offset.y && retval.y < board3Offset.y)
         {
             retval = retval - board2Offset + Vector3.up;
+            retval.y = 1;
         }
         else if (retval.y >= board3Offset.y)
         {
             retval = retval - board3Offset + 2 * Vector3.up;
+            retval.y = 2;
         }
 
         if (retval.x < 0 || retval.y < 0 || retval.z < 0 || retval.x > 7 || retval.y > 3 || retval.z > 7)
@@ -285,6 +251,8 @@ public class BoardManagerReworked : MonoBehaviour
         {
             Destroy(go);
         }
+
+        Pieces = new Piece[8, 3, 8];
     }
 
     private int getPieceID(char p)
@@ -321,7 +289,7 @@ public class BoardManagerReworked : MonoBehaviour
         return -1;
     }
 
-    private string getBoardState()
+    private string GETBoardState()
     {
         string boardState = "";
         int counter = 0;
@@ -368,75 +336,169 @@ public class BoardManagerReworked : MonoBehaviour
             }
         }
         //Hozzáadni kinek a köre és lehet e castleingolni vagy enpassanttolni
+        if (whiteTurn)
+        {
+            boardState += " w";
+        }
+        else
+        {
+            boardState += " b";
+        }
+        //Check castlings and save them
+        boardState += " kq kq";
         return boardState;
     }
 
+    private Vector3 GETBoardOffSet(int board)
+    {
+        Vector3 offset = Vector3.zero;
+        switch (board)
+        {
+            case 0:
+                offset = board1Offset;
+                break;
+            case 1:
+                offset = board2Offset;
+                break;
+            case 2:
+                offset = board3Offset;
+                break;
+        }
+
+        return offset;
+    }
     //Returns true if boardState is invalid
     private bool invalidBoardState(string boardState)
     {
         int whiteKingCounter = 0;
         int blackKingCounter = 0;
-        int x = 0;
+        int x = -1;
         int y = 0;
         int z = 0;
-        foreach (var currentChar in boardState)
+        int endPosition = 0;
+        //"RNBQKBNR/PPPPPPPP/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/pppppppp/rnbqkbnr\n w kq kq"
+        for (int i = 0; i < boardState.Length; i++)
         {
-            if (Char.IsNumber(currentChar))
+            if (Char.IsNumber(boardState[i]))
             {
-                x += currentChar;
-                if (x >= 8)
+                x += int.Parse(boardState[i].ToString());
+                
+            }
+            else if (boardState[i] == '/')
+            {
+                z++;
+                x = -1;
+            }
+            else if (boardState[i] == '\n')
+            {
+                y++;
+                z = 0;
+                x = -1;
+            }
+            else if(boardState[i] == ' ')
+            {
+                endPosition = i+1;
+                break;
+            }
+            else
+            {
+                x++;
+                //print(boardState[i] + " " + x.ToString() + " " + y.ToString() + " " + z.ToString());
+                if (boardState[i] == 'k')
                 {
-                    return true;
+                    blackKingCounter++;
+                }
+                else if (boardState[i] == 'K')
+                {
+                    whiteKingCounter++;
                 }
             }
-            else if (currentChar.Equals('/'))
+
+            if (x > 7 || y > 3 || z > 7)
             {
-                z ++;
-                if (z >= 8)
-                {
-                    return true;
-                }
+                print("Wrong coordinates");
+                print(new Vector3(x, y, z));
+                return true;
             }
-            else if (currentChar.Equals('\n'))
+
+            if (whiteKingCounter >= 2 || blackKingCounter >= 2)
             {
-                y ++;
-                if (y >= 3)
-                {
-                    return true;
-                }
+                print("Too much kings.");
+                return true;
             }
-            else if (currentChar.Equals('k'))
+            
+            if (x >= 0)
             {
-                blackKingCounter++;
-                if (blackKingCounter >= 2)
-                {
-                    return true;
-                }
+                //print(x.ToString() + " " + y.ToString() + " " + z.ToString());
             }
-            else if (currentChar.Equals('K'))
-            {
-                whiteKingCounter++;
-                if (whiteKingCounter >= 2)
-                {
-                    return true;
-                }
-            }
-            //Folytatni kell
         }
-        
         return false;
     }
     
-    private void generateBoardFromBoardState(string boardState)
+    private void GenerateBoardFromBoardState(string boardState)
     {
+        RemoveAllPieces();
+        
         if (invalidBoardState(boardState))
         {
+            print("Invalid boardState!");
             return;
         }
+        
+        int x = -1;
+        int y = 0;
+        int z = 0;
+        int endPosition = 0;
+        //"RNBQKBNR/PPPPPPPP/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/pppppppp/rnbqkbnr\n w kq kq"
         for (int i = 0; i < boardState.Length; i++)
         {
-            //Leidézni a dolgokat a karakterekhez
+            if (Char.IsNumber(boardState[i]))
+            {
+                x += int.Parse(boardState[i].ToString());
+                
+            }
+            else if (boardState[i] == '/')
+            {
+                z++;
+                x = -1;
+            }
+            else if (boardState[i] == '\n')
+            {
+                y++;
+                z = 0;
+                x = -1;
+            }
+            else if(boardState[i] == ' ')
+            {
+                endPosition = i+1;
+                break;
+            }
+            else
+            {
+                x++;
+            }
+
+            if (x >= 0 && !Char.IsNumber(boardState[i]))
+            {
+                //print(boardState[i] + " " + getPieceID(boardState[i]).ToString() + " " + new Vector3(x,y,z).ToString());
+                SpawnPiece(getPieceID(boardState[i]),new Vector3(x,0,z),y);
+                //print(x.ToString() + " " + y.ToString() + " " + z.ToString());
+            }
         }
+        
+        print(endPosition);
+        print(boardState);
+        //endPosition;
+        print(boardState[endPosition]);
+        if (boardState[endPosition].Equals('w'))
+        {
+            whiteTurn = true;
+        }
+        else
+        {
+            whiteTurn = false;
+        }
+        //castling needs to be implemented
     }
 
 }

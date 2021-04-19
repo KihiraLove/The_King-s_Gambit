@@ -30,7 +30,7 @@ public class BoardHighlights : MonoBehaviour
     }
 
     //Gets a three dimensional array and highlights allowed moves
-    public void HighlightAllowedMoves(bool[,,] moves,int boardOffsetY,int boardOffsetZ)
+    public void HighlightAllowedMoves(bool[,,] moves,Vector3 board1Offset,Vector3 board2Offset,Vector3 board3Offset)
     {
         for (int i = 0; i < 3; i++)
         {
@@ -42,7 +42,21 @@ public class BoardHighlights : MonoBehaviour
                     {
                         GameObject go = GetHighlightObject();
                         go.SetActive(true);
-                        go.transform.position = new Vector3(k, i * boardOffsetY, j + i * boardOffsetZ);
+                        var vectorWithOffset = new Vector3(k, 0, j);
+                        switch (i)
+                        {
+                            case 0:
+                                vectorWithOffset += board1Offset;
+                                break;
+                            case 1:
+                                vectorWithOffset += board2Offset;
+                                break;
+                            case 2:
+                                vectorWithOffset += board3Offset;
+                                break;
+                        }
+                        
+                        go.transform.position =  vectorWithOffset;
                     }
                 }
             }

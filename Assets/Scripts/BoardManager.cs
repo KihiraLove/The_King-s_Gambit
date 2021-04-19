@@ -82,7 +82,7 @@ public class BoardManager : MonoBehaviour
         
         //Select the piece and show the allowed moves
         selectedPiece = Pieces[x, y, z];
-        BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves,FIRST_BOARD_HEIGHT,FIRST_BOARD_OFFSET);
+        BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves,new Vector3(),new Vector3(),new Vector3());
     }
 
     //Move the selected piece to position

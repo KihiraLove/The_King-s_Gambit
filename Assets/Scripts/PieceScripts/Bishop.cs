@@ -23,7 +23,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
                 r[i, (int)position.y, j] = true;
@@ -51,7 +51,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
                 r[i, (int)position.y, j] = true;
@@ -79,7 +79,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
                 r[i, (int)position.y, j] = true;
@@ -107,7 +107,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
                 r[i, (int)position.y, j] = true;
@@ -139,7 +139,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -169,7 +169,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -199,7 +199,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -229,7 +229,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -260,7 +260,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -290,7 +290,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -320,7 +320,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -350,7 +350,7 @@ public class Bishop : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;

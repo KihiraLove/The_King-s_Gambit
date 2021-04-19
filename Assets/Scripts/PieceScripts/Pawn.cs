@@ -16,7 +16,7 @@ public class Pawn : Piece
             //Diagonal Left (Piece not on the left of the board and not in the end)
             if ((int)position.x != 0 && (int)position.z != 7)
             {
-                c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y, (int)position.z + 1];
+                c = BoardManagerReworked.Instance.Pieces[(int)position.x - 1, (int)position.y, (int)position.z + 1];
                 
                 //Diagonal left same board
                 if (c != null && !c.isWhite)
@@ -27,7 +27,7 @@ public class Pawn : Piece
                 //Diagonal left lower board
                 if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y -1, (int)position.z + 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x - 1, (int)position.y -1, (int)position.z + 1];
                     if (c != null && !c.isWhite)
                     {
                         r[(int)position.x -1, (int)position.y -1, (int)position.z + 1] = true;
@@ -36,7 +36,7 @@ public class Pawn : Piece
                 //Diagonal left higher board
                 if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y +1, (int)position.z + 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x - 1, (int)position.y +1, (int)position.z + 1];
                     if (c != null && !c.isWhite)
                     {
                         r[(int)position.x -1, (int)position.y +1, (int)position.z + 1] = true;
@@ -48,7 +48,7 @@ public class Pawn : Piece
             //Diagonal Right
             if ((int)position.x != 7 && (int)position.z != 7)
             {
-                c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y, (int)position.z + 1];
+                c = BoardManagerReworked.Instance.Pieces[(int)position.x + 1, (int)position.y, (int)position.z + 1];
 
                 //Diagonal right same board
                 if (c != null && !c.isWhite)
@@ -59,7 +59,7 @@ public class Pawn : Piece
                 //Diagonal right lower board
                 if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y -1, (int)position.z + 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x + 1, (int)position.y -1, (int)position.z + 1];
                     if (c != null && !c.isWhite)
                     {
                         r[(int)position.x +1, (int)position.y -1, (int)position.z + 1] = true;
@@ -69,7 +69,7 @@ public class Pawn : Piece
                 //Diagonal right higher board
                 if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y +1, (int)position.z + 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x + 1, (int)position.y +1, (int)position.z + 1];
                     if (c != null && !c.isWhite)
                     {
                         r[(int)position.x +1, (int)position.y +1, (int)position.z + 1] = true;
@@ -80,7 +80,7 @@ public class Pawn : Piece
             //Middle
             if ((int)position.z != 7)
             {
-                c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y, (int)position.z + 1];
+                c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y, (int)position.z + 1];
                 if (c == null)
                 {
                     r[(int)position.x, (int)position.y, (int)position.z + 1] = true;
@@ -88,13 +88,13 @@ public class Pawn : Piece
 
                 if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z + 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z + 1];
                     if (c == null)
                     {
                         r[(int)position.x, (int)position.y -1, (int)position.z + 1] = true;
                     }
                     
-                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z];
                     if (c == null)
                     {
                         r[(int)position.x, (int)position.y -1, (int)position.z] = true;
@@ -103,12 +103,12 @@ public class Pawn : Piece
 
                 if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y +1, (int)position.z + 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y +1, (int)position.z + 1];
                     if (c == null)
                     {
                         r[(int)position.x, (int)position.y + 1, (int)position.z + 1] = true;
                     }
-                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y + 1, (int)position.z];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y + 1, (int)position.z];
                     if (c == null)
                     {
                         r[(int)position.x, (int)position.y + 1, (int)position.z] = true;
@@ -131,7 +131,7 @@ public class Pawn : Piece
             //Diagonal Left (Piece not on the left of the board and not in the end)
             if ((int)position.x != 0 && (int)position.z != 0)
             {
-                c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y, (int)position.z - 1];
+                c = BoardManagerReworked.Instance.Pieces[(int)position.x - 1, (int)position.y, (int)position.z - 1];
 
                 //Diagonal left same board
                 if (c != null && c.isWhite)
@@ -141,7 +141,7 @@ public class Pawn : Piece
                 //Diagonal left lower board
                 if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y -1, (int)position.z - 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x - 1, (int)position.y -1, (int)position.z - 1];
                     if (c != null && c.isWhite)
                     {
                         r[(int)position.x -1, (int)position.y -1, (int)position.z - 1] = true;
@@ -151,7 +151,7 @@ public class Pawn : Piece
                 //Diagonal left higher board
                 if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x - 1, (int)position.y +1, (int)position.z - 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x - 1, (int)position.y +1, (int)position.z - 1];
                     if (c != null && c.isWhite)
                     {
                         r[(int)position.x -1, (int)position.y +1, (int)position.z - 1] = true;
@@ -162,7 +162,7 @@ public class Pawn : Piece
             //Diagonal Right
             if ((int)position.x != 7 && (int)position.z != 0)
             {
-                c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y, (int)position.z - 1];
+                c = BoardManagerReworked.Instance.Pieces[(int)position.x + 1, (int)position.y, (int)position.z - 1];
                 //Diagonal right same board
                 if (c != null && c.isWhite)
                 {
@@ -171,7 +171,7 @@ public class Pawn : Piece
                 //Diagonal right lower board
                 if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y -1, (int)position.z - 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x + 1, (int)position.y -1, (int)position.z - 1];
                     if (c != null && c.isWhite)
                     {
                         r[(int)position.x +1, (int)position.y -1, (int)position.z - 1] = true;
@@ -181,7 +181,7 @@ public class Pawn : Piece
                 //Diagonal right higher board
                 if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x + 1, (int)position.y +1, (int)position.z - 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x + 1, (int)position.y +1, (int)position.z - 1];
                     if (c != null && c.isWhite)
                     {
                         r[(int)position.x +1, (int)position.y +1, (int)position.z - 1] = true;
@@ -192,7 +192,7 @@ public class Pawn : Piece
             //Middle
             if ((int)position.z != 0)
             {
-                c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y, (int)position.z - 1];
+                c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y, (int)position.z - 1];
                 if (c == null)
                 {
                     r[(int)position.x, (int)position.y, (int)position.z - 1] = true;
@@ -200,13 +200,13 @@ public class Pawn : Piece
 
                 if ((int)position.y != 0)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z - 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z - 1];
                     if (c == null)
                     {
                         r[(int)position.x, (int)position.y -1, (int)position.z - 1] = true;
                     }
                     
-                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y -1, (int)position.z];
                     if (c == null)
                     {
                         r[(int)position.x, (int)position.y -1, (int)position.z] = true;
@@ -215,12 +215,12 @@ public class Pawn : Piece
 
                 if ((int)position.y != 2)
                 {
-                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y +1, (int)position.z - 1];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y +1, (int)position.z - 1];
                     if (c == null)
                     {
                         r[(int)position.x, (int)position.y + 1, (int)position.z - 1] = true;
                     }
-                    c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y + 1, (int)position.z];
+                    c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y + 1, (int)position.z];
                     if (c == null)
                     {
                         r[(int)position.x, (int)position.y + 1, (int)position.z] = true;

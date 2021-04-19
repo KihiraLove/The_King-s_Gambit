@@ -20,7 +20,7 @@ public class Queen : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[i, (int)position.y, (int)position.z];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, (int)position.z];
             if (c == null)
             {
                 r[i, (int)position.y, (int)position.z] = true;
@@ -44,7 +44,7 @@ public class Queen : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[i, (int)position.y, (int)position.z];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, (int)position.z];
             if (c == null)
             {
                 r[i, (int)position.y, (int)position.z] = true;
@@ -69,7 +69,7 @@ public class Queen : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y, i];
+            c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y, i];
             if (c == null)
             {
                 r[(int)position.x, (int)position.y, i] = true;
@@ -94,7 +94,7 @@ public class Queen : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[(int)position.x, (int)position.y, i];
+            c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y, i];
             if (c == null)
             {
                 r[(int)position.x, (int)position.y, i] = true;
@@ -118,7 +118,7 @@ public class Queen : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[(int)position.x, i, (int)position.z];
+            c = BoardManagerReworked.Instance.Pieces[(int)position.x, i, (int)position.z];
             if (c == null)
             {
                 r[(int)position.x, i, (int)position.z] = true;
@@ -143,7 +143,7 @@ public class Queen : Piece
                 break;
             }
 
-            c = BoardManager.Instance.Pieces[(int)position.x, i, (int)position.z];
+            c = BoardManagerReworked.Instance.Pieces[(int)position.x, i, (int)position.z];
             if (c == null)
             {
                 r[(int)position.x, i, (int)position.z] = true;
@@ -199,7 +199,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
                 r[i, (int)position.y, j] = true;
@@ -227,7 +227,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
                 r[i, (int)position.y, j] = true;
@@ -255,7 +255,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
                 r[i, (int)position.y, j] = true;
@@ -283,7 +283,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, (int)position.y, j];
+            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, j];
             if (c == null)
             {
                 r[i, (int)position.y, j] = true;
@@ -315,7 +315,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -345,7 +345,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -375,7 +375,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -405,7 +405,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -436,7 +436,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -466,7 +466,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -496,7 +496,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -526,7 +526,7 @@ public class Queen : Piece
                 break;
             }
             
-            c = BoardManager.Instance.Pieces[i, k, j];
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
@@ -551,7 +551,7 @@ public class Queen : Piece
         Piece c;
         if (x >= 0 && x < 8 && z >= 0 && z < 8 && y >= 0 && y < 3)
         {
-            c = BoardManager.Instance.Pieces[x, y, z];
+            c = BoardManagerReworked.Instance.Pieces[x, y, z];
             if (c == null)
             {
                 r[x, y, z] = true;

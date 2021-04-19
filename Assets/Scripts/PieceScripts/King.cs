@@ -21,7 +21,7 @@ public class King : Piece
                     }
 
                     
-                    c = BoardManager.Instance.Pieces[i, j, k];
+                    c = BoardManagerReworked.Instance.Pieces[i, j, k];
                     if (c == null)
                     {
                         r[i, j, k] = true;
@@ -45,7 +45,7 @@ public class King : Piece
         Piece[] backRow = new Piece[8];
         for (int i = 0; i < 8; i++)
         {
-            backRow[i] = BoardManager.Instance.Pieces[i, (int)position.y, (int)position.z];
+            backRow[i] = BoardManagerReworked.Instance.Pieces[i, (int)position.y, (int)position.z];
         }
 
         if (isWhite)

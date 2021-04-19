@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Piece : MonoBehaviour
 {
-    public bool hasMoved = false;
+    public int roundMoved = 0;
     public Vector3 position;
     
     public bool isWhite;

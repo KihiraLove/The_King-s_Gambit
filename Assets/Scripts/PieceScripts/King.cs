@@ -50,22 +50,22 @@ public class King : Piece
 
         if (isWhite)
         {
-            if (backRow[1] == null && backRow[2] == null&& backRow[3] == null && !backRow[0].hasMoved && !hasMoved)
+            if (backRow[1] == null && backRow[2] == null&& backRow[3] == null && backRow[0].roundMoved == 0 && roundMoved == 0)
             {
                 r[2, (int)position.y, (int)position.z] = true;
             }
-            if (backRow[5] == null&& backRow[6] == null && !backRow[7].hasMoved && !hasMoved)
+            if (backRow[5] == null&& backRow[6] == null && backRow[7].roundMoved == 0 && roundMoved == 0)
             {
                 r[6, (int)position.y, (int)position.z] = true;
             }
         }
         else
         {
-            if (backRow[1] == null && backRow[2] == null&& backRow[3] == null && !backRow[7].hasMoved && !hasMoved)
+            if (backRow[1] == null && backRow[2] == null&& backRow[3] == null && backRow[7].roundMoved == 0 && roundMoved == 0)
             {
                 r[6, (int)position.y, (int)position.z] = true;
             }
-            if (backRow[1] == null&& backRow[2] == null && !backRow[0].hasMoved && !hasMoved)
+            if (backRow[1] == null&& backRow[2] == null && backRow[0].roundMoved == 0 && roundMoved == 0)
             {
                 r[2, (int)position.y, (int)position.z] = true;
             }

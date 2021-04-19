@@ -90,7 +90,7 @@ public class BoardManager : MonoBehaviour
     {
         //Check if the move is castle and then castle if it is
         int [] boardCoordinate  = getBoardCoordinates(y,z);
-        if (selectedPiece.GetType() == typeof(King) && (x == (int)selectedPiece.position.x-2 || x == (int)selectedPiece.position.x+2) && !selectedPiece.hasMoved && allowedMoves[x,boardCoordinate[0],boardCoordinate[1]])
+        if (selectedPiece.GetType() == typeof(King) && (x == (int)selectedPiece.position.x-2 || x == (int)selectedPiece.position.x+2) && selectedPiece.roundMoved == 0 && allowedMoves[x,boardCoordinate[0],boardCoordinate[1]])
         {
             Castle(x);
             return;
@@ -113,7 +113,7 @@ public class BoardManager : MonoBehaviour
             }
             Pieces[(int)selectedPiece.position.x, (int)selectedPiece.position.y, (int)selectedPiece.position.z] = null;
 
-            selectedPiece.hasMoved = true;
+            selectedPiece.roundMoved = 0;
             
             selectedPiece.transform.position = new Vector3(x, y, z);
             

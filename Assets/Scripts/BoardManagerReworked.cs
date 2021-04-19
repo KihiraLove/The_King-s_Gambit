@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -15,12 +16,13 @@ public class BoardManagerReworked : MonoBehaviour
     public Vector3 board3Offset;
 
     public bool whiteTurn;
-    private string startBoardState = "RNBQKBNR/PPPPPPPP/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/pppppppp/rnbqkbnr\n b kq kq";
+    private string startBoardState = "R(0),N(0),B(0),Q(0),K(0),B(0),N(0),R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),n(0),b(0),q(0),k(0),b(0),n(0),r(0),\nw";
     
     public List<GameObject> chessPiecePrefabs;
     public GameObject chessBoardPrefab;
     private List<GameObject> _activeChessPieces;
-    
+
+    public int roundNumber = 1;
     public Piece[,,] Pieces { set; get; }
 
     public Vector3 mousePosition;
@@ -30,7 +32,7 @@ public class BoardManagerReworked : MonoBehaviour
     void Start()
     {
         Initialize();
-        //GenerateBoardFromBoardState("RNBQKBNR/PPPPPPPP/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/pppppppp/rnbqkbnr\n w kq kq");
+        //GenerateBoardFromBoardState(startBoardState);
         //invalidBoardState(startBoardState);
         //print(getBoardState());
     }
@@ -41,7 +43,7 @@ public class BoardManagerReworked : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             
-            print(mousePosition);
+            //print(mousePosition);
             if (mousePosition.x > -98)
             {
                 
@@ -56,7 +58,7 @@ public class BoardManagerReworked : MonoBehaviour
                     //Move;
                     MovePiece(_selectedPiece.position,new Vector3(mousePosition.x,mousePosition.y,mousePosition.z),(int)mousePosition.y);
                     _selectedPiece = null;
-                    
+                    roundNumber++;
                 }
                 else
                 {
@@ -76,7 +78,7 @@ public class BoardManagerReworked : MonoBehaviour
     {
         SpawnBoards();
         SpawnAllPieces();
-        
+        Debug.Log(GETBoardState());
     }
     private void SpawnBoards()
     {
@@ -92,7 +94,7 @@ public class BoardManagerReworked : MonoBehaviour
         board3.GetComponent<BoardData>().boardNumber = 3;
     }
 
-    private void SpawnPiece(int index, Vector3 position,int board)
+    private void SpawnPiece(int index, Vector3 position,int board,int moveTurn)
     {
         Quaternion orientation;
         if (index <= 5)
@@ -109,7 +111,9 @@ public class BoardManagerReworked : MonoBehaviour
         piece.transform.SetParent(transform);
         
         Pieces[(int)position.x, board, (int)position.z] = piece.GetComponent<Piece>();
+        Pieces[(int) position.x, board, (int) position.z].roundMoved = moveTurn;
         Pieces[(int)position.x, board, (int)position.z].SetPosition(new Vector3(position.x,board,position.z));
+        
         
         _activeChessPieces.Add(piece);
         
@@ -153,11 +157,15 @@ public class BoardManagerReworked : MonoBehaviour
         Piece oldP = GetPiece(newPosition);
         if (oldP != null)
         {
+            Debug.Log(oldP.GETPieceCode());
+            if (oldP.GETPieceCode().Equals('K') || oldP.GETPieceCode().Equals('k'))
+            {
+                EndGame();
+            }
             RemovePiece(newPosition);
         }
         ref Piece newP = ref GetPiece(oldPosition);
-        newP.hasMoved = true;
-        
+        newP.roundMoved = roundNumber;
         Vector3 newPos = new Vector3(newPosition.x, 0, newPosition.z);
         switch (board)
         {
@@ -308,21 +316,24 @@ public class BoardManagerReworked : MonoBehaviour
                     }
                     else if(counter != 0)
                     {
-                        boardState += (char) counter + currentPiece.GETPieceCode();
+                        boardState +=  counter + ',' + currentPiece.GETPieceCode() + "(" + currentPiece.roundMoved + "),";
                         counter = 0;
                     }
                     else
                     {
-                        boardState += currentPiece.GETPieceCode();
+                        boardState += currentPiece.GETPieceCode() + "(" + currentPiece.roundMoved + "),";
                     }
                 }
-                
+
                 if (counter != 0)
                 {
                     boardState += counter;
                     counter = 0;
                 }
+
+                boardState = boardState.TrimEnd(',');
                 boardState += '/';
+                counter = 0;
             }
 
             boardState += '\n';
@@ -344,8 +355,7 @@ public class BoardManagerReworked : MonoBehaviour
         {
             boardState += " b";
         }
-        //Check castlings and save them
-        boardState += " kq kq";
+        
         return boardState;
     }
 
@@ -370,75 +380,113 @@ public class BoardManagerReworked : MonoBehaviour
     //Returns true if boardState is invalid
     private bool invalidBoardState(string boardState)
     {
-        int whiteKingCounter = 0;
-        int blackKingCounter = 0;
-        int x = -1;
-        int y = 0;
-        int z = 0;
-        int endPosition = 0;
-        //"RNBQKBNR/PPPPPPPP/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/pppppppp/rnbqkbnr\n w kq kq"
-        for (int i = 0; i < boardState.Length; i++)
+        int x = 0, y = 0, z = 0;
+        int blackKingCounter = 0,whiteKingCounter = 0;
+        int roundCounter = 0;
+        foreach (var i in boardState.Split('\n'))
         {
-            if (Char.IsNumber(boardState[i]))
+            foreach (var j in i.Split('/'))
             {
-                x += int.Parse(boardState[i].ToString());
+                if (z >= 8)
+                {
+                    return true;
+                }
+                foreach (var k in j.Split(','))
+                {
+                    if (x >= 8)
+                    {
+                        return true;
+                    }
+                    if (k.Length > 1)
+                    {
+                        if (k[0] == 'k')
+                        {
+                            blackKingCounter++;
+                            if (blackKingCounter >= 2)
+                            {
+                                return true;
+                            }
+                        }
+                        else if (k[0] == 'K')
+                        {
+                            whiteKingCounter++;
+                            if (whiteKingCounter >= 2)
+                            {
+                                return true;
+                            }
+                        }
+                        //Debug.Log(k + " spawned at " + new Vector3(x,y,z).ToString() + " moved at the round: " + Regex.Match(k, @"\d+").Value);
+                        x++;
+                    }
+                    else if (k.Length >= 1 && Char.IsDigit(k[0]))
+                    {
+                        x += int.Parse(k);
+                    }
+                    else if (k.Length >= 1 && k == "w" || k == "b")
+                    {
+                        roundCounter++;
+                    }
+
+                    
+                }
+                x = 0;
+                z++;
                 
             }
-            else if (boardState[i] == '/')
-            {
-                z++;
-                x = -1;
-            }
-            else if (boardState[i] == '\n')
-            {
-                y++;
-                z = 0;
-                x = -1;
-            }
-            else if(boardState[i] == ' ')
-            {
-                endPosition = i+1;
-                break;
-            }
-            else
-            {
-                x++;
-                //print(boardState[i] + " " + x.ToString() + " " + y.ToString() + " " + z.ToString());
-                if (boardState[i] == 'k')
-                {
-                    blackKingCounter++;
-                }
-                else if (boardState[i] == 'K')
-                {
-                    whiteKingCounter++;
-                }
-            }
-
-            if (x > 7 || y > 3 || z > 7)
-            {
-                print("Wrong coordinates");
-                print(new Vector3(x, y, z));
-                return true;
-            }
-
-            if (whiteKingCounter >= 2 || blackKingCounter >= 2)
-            {
-                print("Too much kings.");
-                return true;
-            }
-            
-            if (x >= 0)
-            {
-                //print(x.ToString() + " " + y.ToString() + " " + z.ToString());
-            }
+            z = 0;
+            y++;
         }
+        //"RNBQKBNR/PPPPPPPP/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/pppppppp/rnbqkbnr\n w kq kq"
+        
         return false;
     }
     
     private void GenerateBoardFromBoardState(string boardState)
     {
         RemoveAllPieces();
+        if (invalidBoardState(boardState))
+        {
+            Debug.Log("Bad board state.");
+            //return;
+        }
         
+        boardState = 
+            "R(0),N(0),B(0),Q(0),K(0),B(0),N(0),R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/3,P(0),4/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),n(0),b(0),q(0),k(0),b(0),n(0),r(0)\nw";
+        int x = 0, y = 0, z = 0;
+        
+        foreach (var i in boardState.Split('\n'))
+        {
+            foreach (var j in i.Split('/'))
+            {
+                foreach (var k in j.Split(','))
+                {
+                    if (k.Length > 1)
+                    {
+                        //Debug.Log(k + " spawned at " + new Vector3(x,y,z).ToString() + " moved at the round: " + Regex.Match(k, @"\d+").Value);
+                        SpawnPiece(getPieceID(k[0]),new Vector3(x,0,z),y, int.Parse(Regex.Match(k, @"\d+").Value));
+                        x++;
+                        
+                    }
+                    else if (k.Length >= 1 && Char.IsDigit(k[0]))
+                    {
+                        x += int.Parse(k);
+                    }
+                    else if (k.Length >= 1 && k == "w" || k == "b")
+                    {
+                        whiteTurn = k.Equals("w");
+                        
+                        //.Log(k[0] + " turn");
+                    }
+                    
+                    
+                }
+                x = 0;
+                z++;
+            }
+            z = 0;
+            y++;
+        }
+        /*
         if (invalidBoardState(boardState))
         {
             print("Invalid boardState!");
@@ -449,6 +497,8 @@ public class BoardManagerReworked : MonoBehaviour
         int y = 0;
         int z = 0;
         int endPosition = 0;
+        
+        
         //"RNBQKBNR/PPPPPPPP/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/pppppppp/rnbqkbnr\n w kq kq"
         for (int i = 0; i < boardState.Length; i++)
         {
@@ -498,7 +548,7 @@ public class BoardManagerReworked : MonoBehaviour
         {
             whiteTurn = false;
         }
-        //castling needs to be implemented
+        //castling needs to be implemented*/
     }
 
 }

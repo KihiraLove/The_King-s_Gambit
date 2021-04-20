@@ -1,193 +1,155 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Rook : Piece
+﻿public class Rook : Piece
 {
     public override bool[,,] PossibleMove()
     {
-        bool[,,] r = new bool[8, 3, 8];
+        var r = new bool[8, 3, 8];
         Piece c;
         int i;
         //Move right
-        i = (int)position.x;
+        i = (int) position.x;
         while (true)
         {
             i++;
-            if (i >= 8)
-            {
-                break;
-            }
+            if (i >= 8) break;
 
-            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, (int)position.z];
+            c = BoardManagerReworked.Instance.Pieces[i, (int) position.y, (int) position.z];
             if (c == null)
             {
-                r[i, (int)position.y, (int)position.z] = true;
+                r[i, (int) position.y, (int) position.z] = true;
             }
             else
             {
-                if (c.isWhite != isWhite)
-                {
-                    r[i, (int)position.y, (int)position.z] = true;
-                }
+                if (c.isWhite != isWhite) r[i, (int) position.y, (int) position.z] = true;
                 break;
             }
         }
+
         //Move left
-        i = (int)position.x;
+        i = (int) position.x;
         while (true)
         {
             i--;
-            if (i == -1)
-            {
-                break;
-            }
+            if (i == -1) break;
 
-            c = BoardManagerReworked.Instance.Pieces[i, (int)position.y, (int)position.z];
+            c = BoardManagerReworked.Instance.Pieces[i, (int) position.y, (int) position.z];
             if (c == null)
             {
-                r[i, (int)position.y, (int)position.z] = true;
+                r[i, (int) position.y, (int) position.z] = true;
             }
             else
             {
-                if (c.isWhite != isWhite)
-                {
-                    r[i, (int)position.y, (int)position.z] = true;
-                }
-                
+                if (c.isWhite != isWhite) r[i, (int) position.y, (int) position.z] = true;
+
                 break;
             }
         }
+
         //Move forward
-        i = (int)position.z;
+        i = (int) position.z;
         while (true)
         {
             i++;
-            if (i == 8)
-            {
-                break;
-            }
+            if (i == 8) break;
 
-            c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y, i];
+            c = BoardManagerReworked.Instance.Pieces[(int) position.x, (int) position.y, i];
             if (c == null)
             {
-                r[(int)position.x, (int)position.y, i] = true;
+                r[(int) position.x, (int) position.y, i] = true;
             }
             else
             {
-                
-                if (c.isWhite != isWhite)
-                {
-                    r[(int)position.x, (int)position.y, i] = true;
-                }
+                if (c.isWhite != isWhite) r[(int) position.x, (int) position.y, i] = true;
                 break;
             }
         }
+
         //Move backward
-        i = (int)position.z;
+        i = (int) position.z;
         while (true)
         {
             i--;
-            if (i == -1)
-            {
-                break;
-            }
+            if (i == -1) break;
 
-            c = BoardManagerReworked.Instance.Pieces[(int)position.x, (int)position.y, i];
+            c = BoardManagerReworked.Instance.Pieces[(int) position.x, (int) position.y, i];
             if (c == null)
             {
-                r[(int)position.x, (int)position.y, i] = true;
-            }
-            else 
-            {
-                if (c.isWhite != isWhite)
-                {
-                    r[(int)position.x, (int)position.y, i] = true;
-                }
-                break;
-            }
-        }
-        //Move up
-        i = (int)position.y;
-        while (true)
-        {
-            i++;
-            if (i == 3)
-            {
-                break;
-            }
-
-            c = BoardManagerReworked.Instance.Pieces[(int)position.x, i, (int)position.z];
-            if (c == null)
-            {
-                r[(int)position.x, i, (int)position.z] = true;
+                r[(int) position.x, (int) position.y, i] = true;
             }
             else
             {
-                
-                if (c.isWhite != isWhite)
-                {
-                    r[(int)position.x, i, (int)position.z] = true;
-                }
+                if (c.isWhite != isWhite) r[(int) position.x, (int) position.y, i] = true;
                 break;
             }
         }
+
+        //Move up
+        i = (int) position.y;
+        while (true)
+        {
+            i++;
+            if (i == 3) break;
+
+            c = BoardManagerReworked.Instance.Pieces[(int) position.x, i, (int) position.z];
+            if (c == null)
+            {
+                r[(int) position.x, i, (int) position.z] = true;
+            }
+            else
+            {
+                if (c.isWhite != isWhite) r[(int) position.x, i, (int) position.z] = true;
+                break;
+            }
+        }
+
         //Move down
-        i = (int)position.y;
+        i = (int) position.y;
         while (true)
         {
             i--;
-            if (i == -1)
-            {
-                break;
-            }
+            if (i == -1) break;
 
-            c = BoardManagerReworked.Instance.Pieces[(int)position.x, i, (int)position.z];
+            c = BoardManagerReworked.Instance.Pieces[(int) position.x, i, (int) position.z];
             if (c == null)
             {
-                r[(int)position.x, i, (int)position.z] = true;
+                r[(int) position.x, i, (int) position.z] = true;
             }
-            else 
+            else
             {
-                if (c.isWhite != isWhite)
-                {
-                    r[(int)position.x, i, (int)position.z] = true;
-                }
-                    
+                if (c.isWhite != isWhite) r[(int) position.x, i, (int) position.z] = true;
+
                 break;
             }
-            
         }
-        
-        
+
+
         //Move in diagonal1 up
-        RookMove((int)position.x +1, (int)position.y + 1, (int)position.z, ref r);
-        RookMove((int)position.x -1, (int)position.y + 1, (int)position.z, ref r);
-        RookMove((int)position.x, (int)position.y + 1, (int)position.z + 1, ref r);
-        RookMove((int)position.x, (int)position.y + 1, (int)position.z - 1, ref r);
-        
+        RookMove((int) position.x + 1, (int) position.y + 1, (int) position.z, ref r);
+        RookMove((int) position.x - 1, (int) position.y + 1, (int) position.z, ref r);
+        RookMove((int) position.x, (int) position.y + 1, (int) position.z + 1, ref r);
+        RookMove((int) position.x, (int) position.y + 1, (int) position.z - 1, ref r);
+
         //Move in diagonal2 up
-        RookMove((int)position.x +2, (int)position.y + 2, (int)position.z, ref r);
-        RookMove((int)position.x -2, (int)position.y + 2, (int)position.z, ref r);
-        RookMove((int)position.x, (int)position.y + 2, (int)position.z + 2, ref r);
-        RookMove((int)position.x, (int)position.y + 2, (int)position.z - 2, ref r);
-        
+        RookMove((int) position.x + 2, (int) position.y + 2, (int) position.z, ref r);
+        RookMove((int) position.x - 2, (int) position.y + 2, (int) position.z, ref r);
+        RookMove((int) position.x, (int) position.y + 2, (int) position.z + 2, ref r);
+        RookMove((int) position.x, (int) position.y + 2, (int) position.z - 2, ref r);
+
         //Move in diagonal1 down
-        RookMove((int)position.x +1, (int)position.y - 1, (int)position.z, ref r);
-        RookMove((int)position.x -1, (int)position.y - 1, (int)position.z, ref r);
-        RookMove((int)position.x, (int)position.y - 1, (int)position.z + 1, ref r);
-        RookMove((int)position.x, (int)position.y - 1, (int)position.z - 1, ref r);
-        
+        RookMove((int) position.x + 1, (int) position.y - 1, (int) position.z, ref r);
+        RookMove((int) position.x - 1, (int) position.y - 1, (int) position.z, ref r);
+        RookMove((int) position.x, (int) position.y - 1, (int) position.z + 1, ref r);
+        RookMove((int) position.x, (int) position.y - 1, (int) position.z - 1, ref r);
+
         //Move in diagonal2 down
-        RookMove((int)position.x +2, (int)position.y - 2, (int)position.z, ref r);
-        RookMove((int)position.x -2, (int)position.y - 2, (int)position.z, ref r);
-        RookMove((int)position.x, (int)position.y - 2, (int)position.z + 2, ref r);
-        RookMove((int)position.x, (int)position.y - 2, (int)position.z - 2, ref r);
-        
-        
+        RookMove((int) position.x + 2, (int) position.y - 2, (int) position.z, ref r);
+        RookMove((int) position.x - 2, (int) position.y - 2, (int) position.z, ref r);
+        RookMove((int) position.x, (int) position.y - 2, (int) position.z + 2, ref r);
+        RookMove((int) position.x, (int) position.y - 2, (int) position.z - 2, ref r);
+
+
         return r;
     }
-    
+
     //Helper function checks if place is valid and puts it in the array
     public void RookMove(int x, int y, int z, ref bool[,,] r)
     {
@@ -196,24 +158,15 @@ public class Rook : Piece
         {
             c = BoardManagerReworked.Instance.Pieces[x, y, z];
             if (c == null)
-            {
                 r[x, y, z] = true;
-            }
-            else if (isWhite != c.isWhite)
-            {
-                r[x, y, z] = true;
-            }
+            else if (isWhite != c.isWhite) r[x, y, z] = true;
         }
     }
+
     public override char GETPieceCode()
     {
         if (isWhite)
-        {
             return 'R';
-        }
-        else
-        {
-            return 'r';
-        }
+        return 'r';
     }
 }

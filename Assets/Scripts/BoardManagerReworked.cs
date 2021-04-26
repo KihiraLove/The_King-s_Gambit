@@ -32,11 +32,13 @@ public class BoardManagerReworked : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        allowedMoves = new bool[8, 3, 8];
         Initialize();
-        IsKingInCheck();
+        
         //GenerateBoardFromBoardState(startBoardState);
         //invalidBoardState(startBoardState);
         //print(getBoardState());
+        
     }
 
     // Update is called once per frame
@@ -201,17 +203,31 @@ public class BoardManagerReworked : MonoBehaviour
 
     private void MovePiece(Vector3 oldPosition, Vector3 newPosition, int board)
     {
+        var PiecesCopy = (Piece[,,]) Pieces.Clone();
+        
         var oldP = GetPiece(newPosition);
         if (oldP != null)
         {
-            Debug.Log(oldP.GETPieceCode());
+            //Debug.Log(oldP.GETPieceCode());
             if (oldP.GETPieceCode().Equals('K') || oldP.GETPieceCode().Equals('k')) EndGame();
 
             RemovePiece(newPosition);
         }
-
+        Debug.Log(IsKingInCheck(GETKing().position,PiecesCopy));
+        
         ref var newP = ref GetPiece(oldPosition);
         newP.roundMoved = roundNumber;
+        if (char.ToUpper(newP.GETPieceCode()).Equals('P'))
+        {
+            if (oldPosition.x.Equals(newPosition.x) && oldPosition.y.Equals(newPosition.y) &&
+                Math.Abs(oldPosition.z - newPosition.z).Equals(2))
+            {
+                ((Pawn) newP).doubleMoved = true;
+            }
+            EnPassantMove(oldPosition,newPosition);
+        }
+
+        
         var newPos = new Vector3(newPosition.x, 0, newPosition.z);
         switch (board)
         {
@@ -226,10 +242,25 @@ public class BoardManagerReworked : MonoBehaviour
                 break;
         }
 
+        
         newP.SetPosition(new Vector3(newPosition.x, board, newPosition.z));
         SetPiece(new Vector3(newPosition.x, board, newPosition.z), ref newP);
+        Pieces[(int) oldPosition.x, (int) oldPosition.y, (int) oldPosition.z] = null;
         whiteTurn = !whiteTurn;
         BoardHighlights.Instance.HideHighlights();
+        
+    }
+
+    private void EnPassantMove(Vector3 oldPosition, Vector3 newPosition)
+    {
+        int forward;
+        //Set forward based on black white
+        
+        //Left forward move with pawn on left getpiece
+        
+        //Right forward move with pawn right getpiece
+        
+        //If enpassant remove the left or right piece and we are done with en passant
     }
 
     //This function sets the coordinates of selection
@@ -573,17 +604,19 @@ public class BoardManagerReworked : MonoBehaviour
         return null;
     }
 
-    private bool IsKingInCheck()
+    public bool IsKingInCheck(Vector3 coords,Piece[,,] positions)
     {
         //Ciklus ami kell és akkor végigmegy mondjuk 1 től x ig és mindegyiknél csak megnézi a megfelelőket
         var king = GETKing();
+        
         //Diagonal loop
         int oX, oY, oZ;
-        oX = (int) king.position.x;
-        oY = (int) king.position.y;
-        oZ = (int) king.position.z;
-        int x, y, z;
-        /*for (int i = 1; i <= 7; i++)
+        oX = (int) coords.x;
+        oY = (int) coords.y;
+        oZ = (int) coords.z;
+        int x, y, z; 
+        /*
+        for (int i = 1; i <= 7; i++)
         {
             for (int j = -1; j <= 1; j++)
             {
@@ -594,15 +627,16 @@ public class BoardManagerReworked : MonoBehaviour
                         x = oX - (k * i);
                         y = oY - j;
                         z = oZ - (l * i);
-                        if ((x >= 0 && x < 8) && (z >= 0 && z < 8) && )
+                        if ((x >= 0 && x < 8) && (z >= 0 && z < 8))
                         {
-                            Debug.Log(new Vector3(x,y,z));
+                            //Debug.Log(new Vector3(x,y,z));
+                            Lista1.Add(new Vector3(x,y,z));
                         }
                     }
                 }
             }
-        }*/
-        /*
+        }
+        
         for (int yLoop = -2; yLoop <= 2; yLoop++)
         {
             if (oY - yLoop < 0 || oY - yLoop > 2)
@@ -616,7 +650,7 @@ public class BoardManagerReworked : MonoBehaviour
         }*/
 
         //Look on the lower and upper boards
-        oY = 2;
+       
         /*
         for (var i = -2; i <= 2; i++)
         {
@@ -638,7 +672,11 @@ public class BoardManagerReworked : MonoBehaviour
                             z = l;
                             if (x >= 0  && z >= 0 )
                             {
-                                Debug.Log(new Vector3(x,oY,z));
+                                if (IsValidCoordinate(new Vector3(x,oY,z)))
+                                {
+                                    Lista1.Add(new Vector3(x,oY,z));
+                                }
+                                //Debug.Log(new Vector3(x,oY,z));
                             }
                         }
                     }
@@ -654,69 +692,509 @@ public class BoardManagerReworked : MonoBehaviour
                         z = l;
                         if (x >= 0  && z >= 0 )
                         {
-                            Debug.Log(new Vector3(x, oY + i, z));
+                            if (IsValidCoordinate(new Vector3(x, oY + i, z)))
+                            {
+                                Lista1.Add(new Vector3(x, oY + i, z));
+                            }
+                            //Debug.Log(new Vector3(x, oY + i, z));
                         }
                     }
                 }
-        }
-*/
-
-        //Horizontal loop
+        }*/
         
-        for (var i = -2; i <= 2; i++)
+        //Horizontal loop
+        for (int k = -2; k <= 2; k++)
         {
-            if (oY + i < 0 || oY + i > 2)
+            if (oY + k < 0 || oY + k > 2)
             {
-                
                 continue;
             }
-            
-            //Same board;
-            if (i == 0)
-                for (var j = 1; j <= 7; j++)
+            for (int j = 0; j < 4; j++)
+            {
+                for (int i = 1; i <= 8; i++)
                 {
-                    for (var k = -j; k <= j; k += j)
+                    if (k != 0 && i < Math.Abs(k))
                     {
-                        for (var l = -j; l <= j; l += j)
+                        continue;
+                    }
+                    else if (k != 0 && i != Math.Abs(k))
+                    {
+                        break;
+                    }
+                    int xMove = -5;
+                    int zMove = -5;
+                    switch (j)
+                    {
+                        case 0:
+                            xMove = 0;
+                            zMove = -1;
+                            break;
+                        case 1:
+                            xMove = 0;
+                            zMove = 1;
+                            break;
+                        case 2:
+                            xMove = -1;
+                            zMove = 0;
+                            break;
+                        case 3:
+                            xMove = 1;
+                            zMove = 0;
+                            break;
+                    }
+                    x = oX + i*xMove;
+                    y = oY + k;
+                    z = oZ + i*zMove;
+                    
+                    if (IsValidCoordinate(new Vector3(x, y, z)))
+                    {
+                        if (positions[x, y, z] == null)
                         {
-                            x = k;
-                            z = l;
-                            if (x >= 0  && z >= 0 && (x != z || x == 0 && z == 0))
+                            continue;
+                        }
+                        else if (positions[x, y, z].isWhite == king.isWhite)
+                        {
+                            break;
+                        }
+                        else if (positions[x, y, z].isWhite != king.isWhite)
+                        {
+                            if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('B'))
                             {
-                                Debug.Log(new Vector3(x,oY,z));
+                                return true;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        break;
+                    }
+                
+                }
+            }
+        }
+
+        //Down horizontal
+        for (int i = -2; i < 0; i++)
+        {
+            x = oX;
+            y = oY + i;
+            z = oZ;
+            if (IsValidCoordinate(new Vector3(x, y, z)))
+            {
+                if (positions[x, y, z] == null)
+                {
+                    continue;
+                }
+                else if (positions[x, y, z].isWhite == king.isWhite)
+                {
+                    break;
+                }
+                else if (positions[x, y, z].isWhite != king.isWhite)
+                {
+                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('R') || char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('Q'))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        
+        //Up horizontal
+        for (int i = -2; i < 0; i++)
+        {
+            x = oX;
+            y = oY - i;
+            z = oZ;
+            if (IsValidCoordinate(new Vector3(x, y, z)))
+            {
+                if (positions[x, y, z] == null)
+                {
+                    continue;
+                }
+                else if (positions[x, y, z].isWhite == king.isWhite)
+                {
+                    break;
+                }
+                else if (positions[x, y, z].isWhite != king.isWhite)
+                {
+                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('R') || char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('Q'))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        
+        //Vertical loop
+        
+        for (int k = -2; k <= 2; k++)
+        {
+            if (oY + k < 0 || oY + k > 2)
+            {
+                continue;
+            }
+            for (int j = 0; j < 4; j++)
+            {
+                for (int i = 1; i <= 8; i++)
+                {
+                    if (k != 0 && i < Math.Abs(k))
+                    {
+                        continue;
+                    }
+                    else if (k != 0 && i != Math.Abs(k))
+                    {
+                        break;
+                    }
+                    int xMove = 1;
+                    int zMove = 1;
+                    switch (j)
+                    {
+                        case 0:
+                            xMove *= -1;
+                            zMove *= -1;
+                            break;
+                        case 1:
+                            xMove *= 1;
+                            zMove *= -1;
+                            break;
+                        case 2:
+                            xMove *= -1;
+                            zMove *= 1;
+                            break;
+                        case 3:
+                            xMove *= 1;
+                            zMove *= 1;
+                            break;
+                    }
+                    x = oX + i*xMove;
+                    y = oY + k;
+                    z = oZ + i*zMove;
+                    
+                    if (IsValidCoordinate(new Vector3(x, y, z)))
+                    {
+                        if (positions[x, y, z] == null)
+                        {
+                            //Debug.Log(new Vector3(x, y, z));
+                            continue;
+                        }
+                        else if (positions[x, y, z].isWhite == king.isWhite)
+                        {
+                            break;
+                        }
+                        else if (positions[x, y, z].isWhite != king.isWhite)
+                        {
+                            if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('B') || char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('Q'))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        break;
+                    }
+                
+                }
+            }
+        }
+
+        //Horse loop
+
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                if (Math.Abs(i) != Math.Abs(j)){
+                    for (int k = 1; k <= 2; k++)
+                    {
+                        if (k == 1)
+                        {
+                            
+                            if (IsValidCoordinate(new Vector3(oX+i, oY + 2, oZ+j)))
+                            {
+                                x = oX+i;
+                                y = oY + 2;
+                                z = oZ+j;
+                                if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
+                                {
+                                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
+                                    {
+                                        return true;
+                                    }
+                                }
+                                //Debug.Log(new Vector3(oX+i, oY + 2, oZ+j));
+                                //allowedMoves[oX+i, oY + 2, oZ+j] = true;
+                            }
+                            
+                            if (IsValidCoordinate(new Vector3(oX+i, oY - 2, oZ+j)))
+                            {
+                                x = oX+i;
+                                y = oY - 2;
+                                z = oZ+j;
+                                if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
+                                {
+                                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
+                                    {
+                                        return true;
+                                    }
+                                }
+                                //Debug.Log(new Vector3(oX+i, oY - 2, oZ+j));
+                                //allowedMoves[oX+i, oY - 2, oZ+j] = true;
+                            }
+                        }
+                        else
+                        {
+                            if (i != 0)
+                            {
+                                if (IsValidCoordinate(new Vector3(oX+2*i, oY, oZ+1)))
+                                {
+                                    x = oX+2*i;
+                                    y = oY;
+                                    z = oZ+1;
+                                    if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
+                                    {
+                                        if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
+                                        {
+                                            return true;
+                                        }
+                                    }
+                                    //Debug.Log(new Vector3(oX+2*i, oY, oZ+1));
+                                    //allowedMoves[oX+2*i, oY, oZ+1] = true;
+                                }
+                                if (IsValidCoordinate(new Vector3(oX+2*i, oY, oZ-1)))
+                                {
+                                    x = oX+2*i;
+                                    y = oY;
+                                    z = oZ-1;
+                                    if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
+                                    {
+                                        if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
+                                        {
+                                            return true;
+                                        }
+                                    }
+                                    //Debug.Log(new Vector3(oX+2*i, oY, oZ-1));
+                                    //allowedMoves[oX+2*i, oY, oZ-1] = true;
+                                }
+                                
+                            }
+                            else
+                            {
+                                if (IsValidCoordinate(new Vector3(oX+1, oY, oZ+2*j)))
+                                {
+                                    x = oX+1;
+                                    y = oY;
+                                    z = oZ+2*j;
+                                    if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
+                                    {
+                                        if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
+                                        {
+                                            return true;
+                                        }
+                                    }
+                                    //Debug.Log(new Vector3(oX+1, oY, oZ+2*j));
+                                    //allowedMoves[oX+1, oY, oZ+2*j] = true;
+                                }
+                                if (IsValidCoordinate(new Vector3(oX-1, oY, oZ+2*j)))
+                                {
+                                    x = oX-1;
+                                    y = oY;
+                                    z = oZ+2*j;
+                                    if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
+                                    {
+                                        if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
+                                        {
+                                            return true;
+                                        }
+                                    }
+                                    //Debug.Log(new Vector3(oX-1, oY, oZ+2*j));
+                                    //allowedMoves[oX-1, oY, oZ+2*j] = true;
+                                }
+                            }
+                            if (IsValidCoordinate(new Vector3(oX+2*i, oY + 1, oZ+2*j)))
+                            {
+                                x = oX+2*i;
+                                y = oY + 1;
+                                z = oZ+2*j;
+                                if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
+                                {
+                                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
+                                    {
+                                        return true;
+                                    }
+                                }
+                                //Debug.Log(new Vector3(oX+2*i, oY + 1, oZ+2*j));
+                                //allowedMoves[oX+2*i, oY + 1, oZ+2*j] = true;
+                            }
+                            if (IsValidCoordinate(new Vector3(oX+2*i, oY - 1, oZ+2*j)))
+                            {
+                                x = oX+2*i;
+                                y = oY - 1;
+                                z = oZ+2*j;
+                                if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
+                                {
+                                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
+                                    {
+                                        return true;
+                                    }
+                                }
+                                //Debug.Log(new Vector3(oX+2*i, oY - 1, oZ+2*j));
+                                //allowedMoves[oX+2*i, oY - 1, oZ+2*j] = true;
                             }
                         }
                     }
-                    
                 }
-                
-            else
-                for (var k = -Math.Abs(i); k <= Math.Abs(i); k += Math.Abs(i))
+            }
+        }
+        
+        //Pawn loop
+        //Check if we have to look forward or behind based on the king
+        //Look forward
+        
+        if (king.isWhite)
+        {
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j += 2)
                 {
-                    for (var l = -Math.Abs(i); l <= Math.Abs(i); l += Math.Abs(i))
+                    z = oZ + 1;
+                    y = oY + i;
+                    x = oX + j;
+                    
+                    if (IsValidCoordinate(new Vector3(x, y, z)) && positions[x,y,z] != null && positions[x,y,z].GETPieceCode() == 'p')
                     {
-                        x = k;
-                        z = l;
-                        if (x >= 0  && z >= 0 && (x != z || x == 0 && z == 0))
+                        return true;
+                    }
+                }
+            }
+        }
+        //Look backward
+        else
+        {
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; i <= 1; i += 2)
+                {
+                    z = oZ - 1;
+                    y = oY + i;
+                    x = oX + j;
+                    Debug.Log(new Vector3(x, y, z));
+                    if (IsValidCoordinate(new Vector3(x, y, z)) && positions[x,y,z] != null && positions[x,y,z].GETPieceCode() == 'P')
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        //King loop
+        int posX;
+        int posY;
+        int posZ;
+        for (int l = -1; l <= 1; l++)
+        {
+            for (int m = -1; m <= 1; m++)
+            {
+                for (int n = -1; n <= 1; n++)
+                {
+                    posX = oX + l;
+                    posY = oY + m;
+                    posZ = oZ + n;
+                    if (IsValidCoordinate(new Vector3(posX, posY, posZ)))
+                    {
+
+                        if (!new Vector3(posX, posY, posZ).Equals(coords) &&
+                            GetPiece(new Vector3(posX, posY, posZ)) != null &&
+                            Char.ToUpper(GetPiece(new Vector3(posX, posY, posZ)).GETPieceCode())
+                                .Equals('K'))
                         {
-                            Debug.Log(new Vector3(x, oY + i, z));
+                            return true;
                         }
                     }
                 }
+            }
         }
-        
-
-
-        //Horse loop needs to be implemented
-
-        for (var i = 0; i < 9; i++)
+        /*
+        for (int k = -1; k <= 1; k++)
         {
-        }
+            for (int i = -1; i <= 1; i++)
+            {
+                for(int j = -1 ; j <= 1; j++)
+                {
+                    posX = oX + i;
+                    posY = oY + k;
+                    posZ = oZ + j;
+                    if (IsValidCoordinate(new Vector3(posX, posY, posZ)))
+                    {
+                        for (int l = -1; l <= 1; l++)
+                        {
+                            for (int m = -1; m <= 1; m++)
+                            {
+                                for(int n = -1 ; n <= 1; n++)
+                                {
+                                    posX = oX + i;
+                                    posY = oY + k;
+                                    posZ = oZ + j;
+                                    if (IsValidCoordinate(new Vector3(posX, posY, posZ)))
+                                    {
 
-
-        return true;
+                                        if (!new Vector3(posX, posY, posZ).Equals(king.position) &&
+                                            GetPiece(new Vector3(posX, posY, posZ)) != null &&
+                                            Char.ToUpper(GetPiece(new Vector3(posX, posY, posZ)).GETPieceCode())
+                                                .Equals('K'))
+                                        {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
+        
+        return false;
     }
 
+    public bool IsValidCoordinate(Vector3 coord)
+    {
+        if ((int)coord.x >= 0  && (int)coord.z >= 0 && (int)coord.x <= 7 && (int)coord.z <= 7 && (int)coord.y >= 0 && (int)coord.y <= 2)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool IsAllowedMove(Piece first, Piece other)
+    {
+        if (other == null || first.isWhite != other.isWhite)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     /*private List<Vector3> getChordsInDistance(Vector3 coord, int distance)
     {
         List<Vector3> retval = new List<Vector3>();

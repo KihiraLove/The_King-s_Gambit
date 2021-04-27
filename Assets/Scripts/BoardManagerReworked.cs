@@ -23,7 +23,7 @@ public class BoardManagerReworked : MonoBehaviour
 
     public bool[,,] allowedMoves = new bool[8, 3, 8];
 
-    private readonly string startBoardState =
+    private string startBoardState =
         "R(0),N(0),B(0),Q(0),K(0),B(0),N(0),R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),n(0),b(0),q(0),k(0),b(0),n(0),r(0),\nw";
 
     public static BoardManagerReworked Instance { set; get; }
@@ -32,13 +32,14 @@ public class BoardManagerReworked : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        //startBoardState = "R(0),3,K(0),2,R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),3,k(0),2,r(0),\nb";
         allowedMoves = new bool[8, 3, 8];
         Initialize();
-        
+
         //GenerateBoardFromBoardState(startBoardState);
         //invalidBoardState(startBoardState);
         //print(getBoardState());
-        
+
     }
 
     // Update is called once per frame
@@ -64,11 +65,13 @@ public class BoardManagerReworked : MonoBehaviour
                             new Vector3(mousePosition.x, mousePosition.y, mousePosition.z), (int) mousePosition.y);
                         _selectedPiece = null;
                         roundNumber++;
+                        BoardHighlights.Instance.HideHighlights();
                     }
                 }
                 else
                 {
                     _selectedPiece = null;
+                    BoardHighlights.Instance.HideHighlights();
                 }
             }
     }
@@ -107,7 +110,7 @@ public class BoardManagerReworked : MonoBehaviour
 
         //Check if your selected piece have any move at all
         var hasMove = false;
-        allowedMoves = selectedPiece.PossibleMove();
+        allowedMoves = selectedPiece.PossibleMove(Pieces);
         for (var i = 0; i < 8; i++)
         {
             if (hasMove) break;
@@ -170,6 +173,7 @@ public class BoardManagerReworked : MonoBehaviour
 
     private void SpawnAllPieces()
     {
+
         _activeChessPieces = new List<GameObject>();
         Pieces = new Piece[8, 3, 8];
         GenerateBoardFromBoardState(startBoardState);
@@ -204,16 +208,22 @@ public class BoardManagerReworked : MonoBehaviour
     private void MovePiece(Vector3 oldPosition, Vector3 newPosition, int board)
     {
         var PiecesCopy = (Piece[,,]) Pieces.Clone();
-        
+
         var oldP = GetPiece(newPosition);
         if (oldP != null)
         {
             //Debug.Log(oldP.GETPieceCode());
-            if (oldP.GETPieceCode().Equals('K') || oldP.GETPieceCode().Equals('k')) EndGame();
-
-            RemovePiece(newPosition);
+            if (oldP.GETPieceCode().Equals('K') || oldP.GETPieceCode().Equals('k'))
+            {
+                EndGame();
+                return;
+            }
+            else
+            {
+                RemovePiece(newPosition);
+            }
         }
-        Debug.Log(IsKingInCheck(GETKing().position,PiecesCopy));
+
         
         ref var newP = ref GetPiece(oldPosition);
         newP.roundMoved = roundNumber;
@@ -224,10 +234,17 @@ public class BoardManagerReworked : MonoBehaviour
             {
                 ((Pawn) newP).doubleMoved = true;
             }
-            EnPassantMove(oldPosition,newPosition);
+
+            EnPassantMove(oldPosition, newPosition);
         }
 
+        if (char.ToUpper(newP.GETPieceCode()).Equals('K'))
+        {
+            CastleMove(oldPosition, newPosition);
+        }
         
+        
+
         var newPos = new Vector3(newPosition.x, 0, newPosition.z);
         switch (board)
         {
@@ -242,25 +259,117 @@ public class BoardManagerReworked : MonoBehaviour
                 break;
         }
 
-        
+        //newP.roundMoved = roundNumber;
         newP.SetPosition(new Vector3(newPosition.x, board, newPosition.z));
         SetPiece(new Vector3(newPosition.x, board, newPosition.z), ref newP);
         Pieces[(int) oldPosition.x, (int) oldPosition.y, (int) oldPosition.z] = null;
         whiteTurn = !whiteTurn;
         BoardHighlights.Instance.HideHighlights();
-        
+
     }
 
+    private void CastleMove(Vector3 kingPos,Vector3 newPos)
+    {
+        
+        if (newPos == kingPos + Vector3.left*2)
+        {
+            //Debug.Log("kingPos");
+            ref var newPiece = ref GetPiece(new Vector3(0, (int) kingPos.y, (int) kingPos.z));
+            newPiece.roundMoved = roundNumber;
+            newPiece.transform.position = new Vector3(kingPos.x,0,kingPos.z) + Vector3.left + GETBoardOffSet((int)kingPos.y);
+            newPiece.SetPosition(kingPos + Vector3.left);
+            SetPiece(kingPos + Vector3.left, ref newPiece);
+            Pieces[0, (int) kingPos.y, (int) kingPos.z] = null;
+        }
+        else if (newPos == kingPos + Vector3.right*2)
+        {
+//            Debug.Log("kingPos");
+            ref var newPiece = ref GetPiece(new Vector3(7, (int) kingPos.y, (int) kingPos.z));
+            newPiece.roundMoved = roundNumber;
+            newPiece.transform.position = new Vector3(kingPos.x,0,kingPos.z) + Vector3.right + GETBoardOffSet((int)kingPos.y);
+            newPiece.SetPosition(kingPos + Vector3.right);
+            SetPiece(kingPos + Vector3.right, ref newPiece);
+            Pieces[7, (int) kingPos.y, (int) kingPos.z] = null;
+        }
+    }
     private void EnPassantMove(Vector3 oldPosition, Vector3 newPosition)
     {
         int forward;
+        int oX, oY, oZ;
+        oX = (int) oldPosition.x;
+        oY = (int) oldPosition.y;
+        oZ = (int) oldPosition.z;
+        int x, y, z;
+        int nX, nY, nZ;
+        nX = (int) newPosition.x;
+        nY = (int) newPosition.y;
+        nZ = (int) newPosition.z;
+        Piece oldPiece = Pieces[oX, oY, oZ];
+        Piece newPositionPiece = Pieces[nX, nY, nZ];
         //Set forward based on black white
-        
-        //Left forward move with pawn on left getpiece
-        
-        //Right forward move with pawn right getpiece
-        
-        //If enpassant remove the left or right piece and we are done with en passant
+        if (oldPiece != null)
+        {
+            if (oldPiece.isWhite)
+            {
+                forward = 1;
+            }
+            else
+            {
+                forward = -1;
+            }
+        }
+
+        if (newPositionPiece != null)
+        {
+            return;
+        }
+
+
+        Piece sidePawn;
+        if (nX > oX)
+        {
+            //Jobbra mozogtunk
+            sidePawn = Pieces[oX + 1, oY, oZ];
+            if (sidePawn == null)
+            {
+                return;
+            }
+
+            if (!char.ToUpper(sidePawn.GETPieceCode()).Equals('P'))
+            {
+                return;
+            }
+
+            if (((Pawn) sidePawn).doubleMoved == true && sidePawn.roundMoved == roundNumber - 1 &&
+                oldPiece.isWhite != sidePawn.isWhite)
+            {
+                RemovePiece(sidePawn.position);
+                Pieces[oX + 1, oY, oZ] = null;
+            }
+        }
+        else if (nX < oX)
+        {
+            //Balra mozogtunk
+            Debug.Log("asd");
+            sidePawn = Pieces[oX - 1, oY, oZ];
+            if (sidePawn == null)
+            {
+                return;
+            }
+
+            if (!char.ToUpper(sidePawn.GETPieceCode()).Equals('P'))
+            {
+                return;
+            }
+
+            if (((Pawn) sidePawn).doubleMoved && sidePawn.roundMoved == roundNumber - 1 &&
+                oldPiece.isWhite != sidePawn.isWhite)
+            {
+                RemovePiece(sidePawn.position);
+                Pieces[oX - 1, oY, oZ] = null;
+            }
+        }
+
     }
 
     //This function sets the coordinates of selection
@@ -304,16 +413,16 @@ public class BoardManagerReworked : MonoBehaviour
 
     private void EndGame()
     {
+        BoardHighlights.Instance.HideHighlights();
         RemoveAllPieces();
         if (whiteTurn)
             Debug.Log("White won!");
         else
             Debug.Log("Black won!");
 
-
         whiteTurn = true;
 
-        BoardHighlights.Instance.HideHighlights();
+
         SpawnAllPieces();
     }
 
@@ -321,7 +430,6 @@ public class BoardManagerReworked : MonoBehaviour
     {
         foreach (var go in _activeChessPieces) Destroy(go);
 
-        Pieces = new Piece[8, 3, 8];
     }
 
     private int getPieceID(char p)
@@ -492,12 +600,9 @@ public class BoardManagerReworked : MonoBehaviour
     private void GenerateBoardFromBoardState(string boardState)
     {
         RemoveAllPieces();
-        if (invalidBoardState(boardState))
-            Debug.Log("Bad board state.");
+
         //return;
 
-        boardState =
-            "R(0),N(0),B(0),Q(0),K(0),B(0),N(0),R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/3,P(0),4/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),n(0),b(0),q(0),k(0),b(0),n(0),r(0)\nw";
         int x = 0, y = 0, z = 0;
 
         foreach (var i in boardState.Split('\n'))
@@ -595,26 +700,30 @@ public class BoardManagerReworked : MonoBehaviour
         //castling needs to be implemented*/
     }
 
-    private Piece GETKing()
+    private Piece GETKing(Piece[,,] positions)
     {
-        foreach (var i in Pieces)
+        foreach (var i in positions)
             if (i != null && i.isWhite == whiteTurn && (i.GETPieceCode().Equals('k') || i.GETPieceCode().Equals('K')))
                 return i;
 
         return null;
     }
 
-    public bool IsKingInCheck(Vector3 coords,Piece[,,] positions)
+    public bool IsKingInCheck(Piece[,,] positions, Vector3 coords)
     {
         //Ciklus ami kell és akkor végigmegy mondjuk 1 től x ig és mindegyiknél csak megnézi a megfelelőket
-        var king = GETKing();
-        
+        var king = GETKing(positions);
+        if (coords == Vector3.negativeInfinity)
+        {
+            coords = king.position;
+        }
+
         //Diagonal loop
         int oX, oY, oZ;
         oX = (int) coords.x;
         oY = (int) coords.y;
         oZ = (int) coords.z;
-        int x, y, z; 
+        int x, y, z;
         /*
         for (int i = 1; i <= 7; i++)
         {
@@ -650,7 +759,7 @@ public class BoardManagerReworked : MonoBehaviour
         }*/
 
         //Look on the lower and upper boards
-       
+
         /*
         for (var i = -2; i <= 2; i++)
         {
@@ -701,7 +810,7 @@ public class BoardManagerReworked : MonoBehaviour
                     }
                 }
         }*/
-        
+
         //Horizontal loop
         for (int k = -2; k <= 2; k++)
         {
@@ -709,6 +818,7 @@ public class BoardManagerReworked : MonoBehaviour
             {
                 continue;
             }
+
             for (int j = 0; j < 4; j++)
             {
                 for (int i = 1; i <= 8; i++)
@@ -721,6 +831,7 @@ public class BoardManagerReworked : MonoBehaviour
                     {
                         break;
                     }
+
                     int xMove = -5;
                     int zMove = -5;
                     switch (j)
@@ -742,10 +853,11 @@ public class BoardManagerReworked : MonoBehaviour
                             zMove = 0;
                             break;
                     }
-                    x = oX + i*xMove;
+
+                    x = oX + i * xMove;
                     y = oY + k;
-                    z = oZ + i*zMove;
-                    
+                    z = oZ + i * zMove;
+
                     if (IsValidCoordinate(new Vector3(x, y, z)))
                     {
                         if (positions[x, y, z] == null)
@@ -758,7 +870,7 @@ public class BoardManagerReworked : MonoBehaviour
                         }
                         else if (positions[x, y, z].isWhite != king.isWhite)
                         {
-                            if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('B'))
+                            if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('R'))
                             {
                                 return true;
                             }
@@ -767,13 +879,13 @@ public class BoardManagerReworked : MonoBehaviour
                                 break;
                             }
                         }
-                        
+
                     }
                     else
                     {
                         break;
                     }
-                
+
                 }
             }
         }
@@ -796,7 +908,8 @@ public class BoardManagerReworked : MonoBehaviour
                 }
                 else if (positions[x, y, z].isWhite != king.isWhite)
                 {
-                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('R') || char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('Q'))
+                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('R') ||
+                        char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('Q'))
                     {
                         return true;
                     }
@@ -807,7 +920,7 @@ public class BoardManagerReworked : MonoBehaviour
                 }
             }
         }
-        
+
         //Up horizontal
         for (int i = -2; i < 0; i++)
         {
@@ -826,7 +939,8 @@ public class BoardManagerReworked : MonoBehaviour
                 }
                 else if (positions[x, y, z].isWhite != king.isWhite)
                 {
-                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('R') || char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('Q'))
+                    if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('R') ||
+                        char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('Q'))
                     {
                         return true;
                     }
@@ -837,15 +951,16 @@ public class BoardManagerReworked : MonoBehaviour
                 }
             }
         }
-        
+
         //Vertical loop
-        
+
         for (int k = -2; k <= 2; k++)
         {
             if (oY + k < 0 || oY + k > 2)
             {
                 continue;
             }
+
             for (int j = 0; j < 4; j++)
             {
                 for (int i = 1; i <= 8; i++)
@@ -858,6 +973,7 @@ public class BoardManagerReworked : MonoBehaviour
                     {
                         break;
                     }
+
                     int xMove = 1;
                     int zMove = 1;
                     switch (j)
@@ -879,10 +995,11 @@ public class BoardManagerReworked : MonoBehaviour
                             zMove *= 1;
                             break;
                     }
-                    x = oX + i*xMove;
+
+                    x = oX + i * xMove;
                     y = oY + k;
-                    z = oZ + i*zMove;
-                    
+                    z = oZ + i * zMove;
+
                     if (IsValidCoordinate(new Vector3(x, y, z)))
                     {
                         if (positions[x, y, z] == null)
@@ -896,7 +1013,8 @@ public class BoardManagerReworked : MonoBehaviour
                         }
                         else if (positions[x, y, z].isWhite != king.isWhite)
                         {
-                            if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('B') || char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('Q'))
+                            if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('B') ||
+                                char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('Q'))
                             {
                                 return true;
                             }
@@ -905,13 +1023,13 @@ public class BoardManagerReworked : MonoBehaviour
                                 break;
                             }
                         }
-                        
+
                     }
                     else
                     {
                         break;
                     }
-                
+
                 }
             }
         }
@@ -922,17 +1040,18 @@ public class BoardManagerReworked : MonoBehaviour
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (Math.Abs(i) != Math.Abs(j)){
+                if (Math.Abs(i) != Math.Abs(j))
+                {
                     for (int k = 1; k <= 2; k++)
                     {
                         if (k == 1)
                         {
-                            
-                            if (IsValidCoordinate(new Vector3(oX+i, oY + 2, oZ+j)))
+
+                            if (IsValidCoordinate(new Vector3(oX + i, oY + 2, oZ + j)))
                             {
-                                x = oX+i;
+                                x = oX + i;
                                 y = oY + 2;
-                                z = oZ+j;
+                                z = oZ + j;
                                 if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
                                 {
                                     if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
@@ -940,15 +1059,16 @@ public class BoardManagerReworked : MonoBehaviour
                                         return true;
                                     }
                                 }
+
                                 //Debug.Log(new Vector3(oX+i, oY + 2, oZ+j));
                                 //allowedMoves[oX+i, oY + 2, oZ+j] = true;
                             }
-                            
-                            if (IsValidCoordinate(new Vector3(oX+i, oY - 2, oZ+j)))
+
+                            if (IsValidCoordinate(new Vector3(oX + i, oY - 2, oZ + j)))
                             {
-                                x = oX+i;
+                                x = oX + i;
                                 y = oY - 2;
-                                z = oZ+j;
+                                z = oZ + j;
                                 if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
                                 {
                                     if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
@@ -956,6 +1076,7 @@ public class BoardManagerReworked : MonoBehaviour
                                         return true;
                                     }
                                 }
+
                                 //Debug.Log(new Vector3(oX+i, oY - 2, oZ+j));
                                 //allowedMoves[oX+i, oY - 2, oZ+j] = true;
                             }
@@ -964,11 +1085,11 @@ public class BoardManagerReworked : MonoBehaviour
                         {
                             if (i != 0)
                             {
-                                if (IsValidCoordinate(new Vector3(oX+2*i, oY, oZ+1)))
+                                if (IsValidCoordinate(new Vector3(oX + 2 * i, oY, oZ + 1)))
                                 {
-                                    x = oX+2*i;
+                                    x = oX + 2 * i;
                                     y = oY;
-                                    z = oZ+1;
+                                    z = oZ + 1;
                                     if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
                                     {
                                         if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
@@ -976,14 +1097,16 @@ public class BoardManagerReworked : MonoBehaviour
                                             return true;
                                         }
                                     }
+
                                     //Debug.Log(new Vector3(oX+2*i, oY, oZ+1));
                                     //allowedMoves[oX+2*i, oY, oZ+1] = true;
                                 }
-                                if (IsValidCoordinate(new Vector3(oX+2*i, oY, oZ-1)))
+
+                                if (IsValidCoordinate(new Vector3(oX + 2 * i, oY, oZ - 1)))
                                 {
-                                    x = oX+2*i;
+                                    x = oX + 2 * i;
                                     y = oY;
-                                    z = oZ-1;
+                                    z = oZ - 1;
                                     if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
                                     {
                                         if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
@@ -991,18 +1114,19 @@ public class BoardManagerReworked : MonoBehaviour
                                             return true;
                                         }
                                     }
+
                                     //Debug.Log(new Vector3(oX+2*i, oY, oZ-1));
                                     //allowedMoves[oX+2*i, oY, oZ-1] = true;
                                 }
-                                
+
                             }
                             else
                             {
-                                if (IsValidCoordinate(new Vector3(oX+1, oY, oZ+2*j)))
+                                if (IsValidCoordinate(new Vector3(oX + 1, oY, oZ + 2 * j)))
                                 {
-                                    x = oX+1;
+                                    x = oX + 1;
                                     y = oY;
-                                    z = oZ+2*j;
+                                    z = oZ + 2 * j;
                                     if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
                                     {
                                         if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
@@ -1010,14 +1134,16 @@ public class BoardManagerReworked : MonoBehaviour
                                             return true;
                                         }
                                     }
+
                                     //Debug.Log(new Vector3(oX+1, oY, oZ+2*j));
                                     //allowedMoves[oX+1, oY, oZ+2*j] = true;
                                 }
-                                if (IsValidCoordinate(new Vector3(oX-1, oY, oZ+2*j)))
+
+                                if (IsValidCoordinate(new Vector3(oX - 1, oY, oZ + 2 * j)))
                                 {
-                                    x = oX-1;
+                                    x = oX - 1;
                                     y = oY;
-                                    z = oZ+2*j;
+                                    z = oZ + 2 * j;
                                     if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
                                     {
                                         if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
@@ -1025,15 +1151,17 @@ public class BoardManagerReworked : MonoBehaviour
                                             return true;
                                         }
                                     }
+
                                     //Debug.Log(new Vector3(oX-1, oY, oZ+2*j));
                                     //allowedMoves[oX-1, oY, oZ+2*j] = true;
                                 }
                             }
-                            if (IsValidCoordinate(new Vector3(oX+2*i, oY + 1, oZ+2*j)))
+
+                            if (IsValidCoordinate(new Vector3(oX + 2 * i, oY + 1, oZ + 2 * j)))
                             {
-                                x = oX+2*i;
+                                x = oX + 2 * i;
                                 y = oY + 1;
-                                z = oZ+2*j;
+                                z = oZ + 2 * j;
                                 if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
                                 {
                                     if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
@@ -1041,14 +1169,16 @@ public class BoardManagerReworked : MonoBehaviour
                                         return true;
                                     }
                                 }
+
                                 //Debug.Log(new Vector3(oX+2*i, oY + 1, oZ+2*j));
                                 //allowedMoves[oX+2*i, oY + 1, oZ+2*j] = true;
                             }
-                            if (IsValidCoordinate(new Vector3(oX+2*i, oY - 1, oZ+2*j)))
+
+                            if (IsValidCoordinate(new Vector3(oX + 2 * i, oY - 1, oZ + 2 * j)))
                             {
-                                x = oX+2*i;
+                                x = oX + 2 * i;
                                 y = oY - 1;
-                                z = oZ+2*j;
+                                z = oZ + 2 * j;
                                 if (positions[x, y, z] != null && positions[x, y, z].isWhite != king.isWhite)
                                 {
                                     if (char.ToUpper(positions[x, y, z].GETPieceCode()).Equals('N'))
@@ -1056,6 +1186,7 @@ public class BoardManagerReworked : MonoBehaviour
                                         return true;
                                     }
                                 }
+
                                 //Debug.Log(new Vector3(oX+2*i, oY - 1, oZ+2*j));
                                 //allowedMoves[oX+2*i, oY - 1, oZ+2*j] = true;
                             }
@@ -1064,11 +1195,11 @@ public class BoardManagerReworked : MonoBehaviour
                 }
             }
         }
-        
+
         //Pawn loop
         //Check if we have to look forward or behind based on the king
         //Look forward
-        
+
         if (king.isWhite)
         {
             for (int i = -1; i <= 1; i++)
@@ -1078,8 +1209,9 @@ public class BoardManagerReworked : MonoBehaviour
                     z = oZ + 1;
                     y = oY + i;
                     x = oX + j;
-                    
-                    if (IsValidCoordinate(new Vector3(x, y, z)) && positions[x,y,z] != null && positions[x,y,z].GETPieceCode() == 'p')
+
+                    if (IsValidCoordinate(new Vector3(x, y, z)) && positions[x, y, z] != null &&
+                        positions[x, y, z].GETPieceCode() == 'p')
                     {
                         return true;
                     }
@@ -1097,13 +1229,15 @@ public class BoardManagerReworked : MonoBehaviour
                     y = oY + i;
                     x = oX + j;
                     Debug.Log(new Vector3(x, y, z));
-                    if (IsValidCoordinate(new Vector3(x, y, z)) && positions[x,y,z] != null && positions[x,y,z].GETPieceCode() == 'P')
+                    if (IsValidCoordinate(new Vector3(x, y, z)) && positions[x, y, z] != null &&
+                        positions[x, y, z].GETPieceCode() == 'P')
                     {
                         return true;
                     }
                 }
             }
         }
+
         //King loop
         int posX;
         int posY;
@@ -1170,13 +1304,14 @@ public class BoardManagerReworked : MonoBehaviour
                 }
             }
         }*/
-        
+
         return false;
     }
 
     public bool IsValidCoordinate(Vector3 coord)
     {
-        if ((int)coord.x >= 0  && (int)coord.z >= 0 && (int)coord.x <= 7 && (int)coord.z <= 7 && (int)coord.y >= 0 && (int)coord.y <= 2)
+        if ((int) coord.x >= 0 && (int) coord.z >= 0 && (int) coord.x <= 7 && (int) coord.z <= 7 &&
+            (int) coord.y >= 0 && (int) coord.y <= 2)
         {
             return true;
         }
@@ -1230,4 +1365,7 @@ public class BoardManagerReworked : MonoBehaviour
 
         return retval;
     }*/
+
+    
+
 }

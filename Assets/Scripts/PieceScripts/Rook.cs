@@ -1,10 +1,15 @@
 ﻿public class Rook : Piece
 {
-    public override bool[,,] PossibleMove()
+    public override bool[,,] PossibleMove(Piece[,,] positions)
     {
         var r = new bool[8, 3, 8];
+        int oX, oY, oZ;
+        oX = (int)position.x;
+        oY = (int)position.y;
+        oZ = (int)position.z;
         Piece c;
         int i;
+        
         //Move right
         i = (int) position.x;
         while (true)

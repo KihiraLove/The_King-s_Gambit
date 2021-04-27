@@ -4,7 +4,7 @@ using UnityEngine;
 public class Pawn : Piece
 {
     public bool doubleMoved = false;
-    public override bool[,,] PossibleMove()
+    public override bool[,,] PossibleMove(Piece[,,] positions)
     {
         var r = new bool[8, 3, 8];
         for (int i = 0; i < 7; i++)

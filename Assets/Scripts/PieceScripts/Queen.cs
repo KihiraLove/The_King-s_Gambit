@@ -1,565 +1,455 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Queen : Piece
+﻿public class Queen : Piece
 {
     //Basically a crtl + c of bishop and rooks move
-    public override bool[,,] PossibleMove()
+    public override bool[,,] PossibleMove(Piece[,,] positions)
     {
-        bool[,,] r = new bool[8, 3, 8];
+        var r = new bool[8, 3, 8];
         Piece c;
         int i;
         //Move right
-        i = BoardX;
+        i = (int) position.x;
         while (true)
         {
             i++;
-            if (i >= 8)
-            {
-                break;
-            }
+            if (i >= 8) break;
 
-            c = BoardManager.Instance.Pieces[i, BoardY, BoardZ];
+            c = BoardManagerReworked.Instance.Pieces[i, (int) position.y, (int) position.z];
             if (c == null)
             {
-                r[i, BoardY, BoardZ] = true;
+                r[i, (int) position.y, (int) position.z] = true;
             }
             else
             {
-                if (c.isWhite != isWhite)
-                {
-                    r[i, BoardY, BoardZ] = true;
-                }
+                if (c.isWhite != isWhite) r[i, (int) position.y, (int) position.z] = true;
                 break;
             }
         }
+
         //Move left
-        i = BoardX;
+        i = (int) position.x;
         while (true)
         {
             i--;
-            if (i == -1)
-            {
-                break;
-            }
+            if (i == -1) break;
 
-            c = BoardManager.Instance.Pieces[i, BoardY, BoardZ];
+            c = BoardManagerReworked.Instance.Pieces[i, (int) position.y, (int) position.z];
             if (c == null)
             {
-                r[i, BoardY, BoardZ] = true;
+                r[i, (int) position.y, (int) position.z] = true;
             }
             else
             {
-                if (c.isWhite != isWhite)
-                {
-                    r[i, BoardY, BoardZ] = true;
-                }
-                
+                if (c.isWhite != isWhite) r[i, (int) position.y, (int) position.z] = true;
+
                 break;
             }
         }
+
         //Move forward
-        i = BoardZ;
+        i = (int) position.z;
         while (true)
         {
             i++;
-            if (i == 8)
-            {
-                break;
-            }
+            if (i == 8) break;
 
-            c = BoardManager.Instance.Pieces[BoardX, BoardY, i];
+            c = BoardManagerReworked.Instance.Pieces[(int) position.x, (int) position.y, i];
             if (c == null)
             {
-                r[BoardX, BoardY, i] = true;
+                r[(int) position.x, (int) position.y, i] = true;
             }
             else
             {
-                
-                if (c.isWhite != isWhite)
-                {
-                    r[BoardX, BoardY, i] = true;
-                }
+                if (c.isWhite != isWhite) r[(int) position.x, (int) position.y, i] = true;
                 break;
             }
         }
+
         //Move backward
-        i = BoardZ;
+        i = (int) position.z;
         while (true)
         {
             i--;
-            if (i == -1)
-            {
-                break;
-            }
+            if (i == -1) break;
 
-            c = BoardManager.Instance.Pieces[BoardX, BoardY, i];
+            c = BoardManagerReworked.Instance.Pieces[(int) position.x, (int) position.y, i];
             if (c == null)
             {
-                r[BoardX, BoardY, i] = true;
-            }
-            else 
-            {
-                if (c.isWhite != isWhite)
-                {
-                    r[BoardX, BoardY, i] = true;
-                }
-                break;
-            }
-        }
-        //Move up
-        i = BoardY;
-        while (true)
-        {
-            i++;
-            if (i == 3)
-            {
-                break;
-            }
-
-            c = BoardManager.Instance.Pieces[BoardX, i, BoardZ];
-            if (c == null)
-            {
-                r[BoardX, i, BoardZ] = true;
+                r[(int) position.x, (int) position.y, i] = true;
             }
             else
             {
-                
-                if (c.isWhite != isWhite)
-                {
-                    r[BoardX, i, BoardZ] = true;
-                }
+                if (c.isWhite != isWhite) r[(int) position.x, (int) position.y, i] = true;
                 break;
             }
         }
-        //Move down
-        i = BoardY;
-        while (true)
-        {
-            i--;
-            if (i == -1)
-            {
-                break;
-            }
 
-            c = BoardManager.Instance.Pieces[BoardX, i, BoardZ];
+        //Move up
+        i = (int) position.y;
+        while (true)
+        {
+            i++;
+            if (i == 3) break;
+
+            c = BoardManagerReworked.Instance.Pieces[(int) position.x, i, (int) position.z];
             if (c == null)
             {
-                r[BoardX, i, BoardZ] = true;
+                r[(int) position.x, i, (int) position.z] = true;
             }
-            else 
+            else
             {
-                if (c.isWhite != isWhite)
-                {
-                    r[BoardX, i, BoardZ] = true;
-                }
-                    
+                if (c.isWhite != isWhite) r[(int) position.x, i, (int) position.z] = true;
                 break;
             }
-            
         }
-        
-        
+
+        //Move down
+        i = (int) position.y;
+        while (true)
+        {
+            i--;
+            if (i == -1) break;
+
+            c = BoardManagerReworked.Instance.Pieces[(int) position.x, i, (int) position.z];
+            if (c == null)
+            {
+                r[(int) position.x, i, (int) position.z] = true;
+            }
+            else
+            {
+                if (c.isWhite != isWhite) r[(int) position.x, i, (int) position.z] = true;
+
+                break;
+            }
+        }
+
+
         //Move in diagonal1 up
-        RookMove(BoardX +1, BoardY + 1, BoardZ, ref r);
-        RookMove(BoardX -1, BoardY + 1, BoardZ, ref r);
-        RookMove(BoardX, BoardY + 1, BoardZ + 1, ref r);
-        RookMove(BoardX, BoardY + 1, BoardZ - 1, ref r);
-        
+        RookMove((int) position.x + 1, (int) position.y + 1, (int) position.z, ref r);
+        RookMove((int) position.x - 1, (int) position.y + 1, (int) position.z, ref r);
+        RookMove((int) position.x, (int) position.y + 1, (int) position.z + 1, ref r);
+        RookMove((int) position.x, (int) position.y + 1, (int) position.z - 1, ref r);
+
         //Move in diagonal2 up
-        RookMove(BoardX +2, BoardY + 2, BoardZ, ref r);
-        RookMove(BoardX -2, BoardY + 2, BoardZ, ref r);
-        RookMove(BoardX, BoardY + 2, BoardZ + 2, ref r);
-        RookMove(BoardX, BoardY + 2, BoardZ - 2, ref r);
-        
+        RookMove((int) position.x + 2, (int) position.y + 2, (int) position.z, ref r);
+        RookMove((int) position.x - 2, (int) position.y + 2, (int) position.z, ref r);
+        RookMove((int) position.x, (int) position.y + 2, (int) position.z + 2, ref r);
+        RookMove((int) position.x, (int) position.y + 2, (int) position.z - 2, ref r);
+
         //Move in diagonal1 down
-        RookMove(BoardX +1, BoardY - 1, BoardZ, ref r);
-        RookMove(BoardX -1, BoardY - 1, BoardZ, ref r);
-        RookMove(BoardX, BoardY - 1, BoardZ + 1, ref r);
-        RookMove(BoardX, BoardY - 1, BoardZ - 1, ref r);
-        
+        RookMove((int) position.x + 1, (int) position.y - 1, (int) position.z, ref r);
+        RookMove((int) position.x - 1, (int) position.y - 1, (int) position.z, ref r);
+        RookMove((int) position.x, (int) position.y - 1, (int) position.z + 1, ref r);
+        RookMove((int) position.x, (int) position.y - 1, (int) position.z - 1, ref r);
+
         //Move in diagonal2 down
-        RookMove(BoardX +2, BoardY - 2, BoardZ, ref r);
-        RookMove(BoardX -2, BoardY - 2, BoardZ, ref r);
-        RookMove(BoardX, BoardY - 2, BoardZ + 2, ref r);
-        RookMove(BoardX, BoardY - 2, BoardZ - 2, ref r);
-        
+        RookMove((int) position.x + 2, (int) position.y - 2, (int) position.z, ref r);
+        RookMove((int) position.x - 2, (int) position.y - 2, (int) position.z, ref r);
+        RookMove((int) position.x, (int) position.y - 2, (int) position.z + 2, ref r);
+        RookMove((int) position.x, (int) position.y - 2, (int) position.z - 2, ref r);
+
         int j;
-        
+
         //Forward Left
-        i = BoardX;
-        j = BoardZ;
+        i = (int) position.x;
+        j = (int) position.z;
         while (true)
         {
             i--;
             j++;
-            if (i < 0 || j == 8)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, BoardY, j];
+            if (i < 0 || j == 8) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, (int) position.y, j];
             if (c == null)
             {
-                r[i, BoardY, j] = true;
+                r[i, (int) position.y, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, BoardY, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, (int) position.y, j] = true;
+
                 break;
             }
-            
         }
+
         //Forward Right
-        i = BoardX;
-        j = BoardZ;
+        i = (int) position.x;
+        j = (int) position.z;
         while (true)
         {
             i++;
             j++;
-            if (i == 8 || j == 8)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, BoardY, j];
+            if (i == 8 || j == 8) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, (int) position.y, j];
             if (c == null)
             {
-                r[i, BoardY, j] = true;
+                r[i, (int) position.y, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, BoardY, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, (int) position.y, j] = true;
+
                 break;
             }
-            
         }
+
         //Backward Left
-        i = BoardX;
-        j = BoardZ;
+        i = (int) position.x;
+        j = (int) position.z;
         while (true)
         {
             i--;
             j--;
-            if (i == -1 || j == -1)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, BoardY, j];
+            if (i == -1 || j == -1) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, (int) position.y, j];
             if (c == null)
             {
-                r[i, BoardY, j] = true;
+                r[i, (int) position.y, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, BoardY, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, (int) position.y, j] = true;
+
                 break;
             }
-            
         }
+
         //Backward Right
-        i = BoardX;
-        j = BoardZ;
+        i = (int) position.x;
+        j = (int) position.z;
         while (true)
         {
             i++;
             j--;
-            if (i == 8 || j == -1)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, BoardY, j];
+            if (i == 8 || j == -1) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, (int) position.y, j];
             if (c == null)
             {
-                r[i, BoardY, j] = true;
+                r[i, (int) position.y, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, BoardY, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, (int) position.y, j] = true;
+
                 break;
             }
-            
         }
 
         int k;
         //Forward Left Up
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int) position.x;
+        j = (int) position.z;
+        k = (int) position.y;
         while (true)
         {
             i--;
             j++;
             k++;
-            if (i < 0 || j == 8 || k == 3)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, k, j];
+            if (i < 0 || j == 8 || k == 3) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, k, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, k, j] = true;
+
                 break;
             }
-            
         }
+
         //Forward Right Up
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int) position.x;
+        j = (int) position.z;
+        k = (int) position.y;
         while (true)
         {
             i++;
             j++;
             k++;
-            if (i == 8 || j == 8 || k == 3)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, k, j];
+            if (i == 8 || j == 8 || k == 3) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, k, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, k, j] = true;
+
                 break;
             }
-            
         }
+
         //Backward Left Up
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int) position.x;
+        j = (int) position.z;
+        k = (int) position.y;
         while (true)
         {
             i--;
             j--;
             k++;
-            if (i < 0 || j < 0 || k == 3)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, k, j];
+            if (i < 0 || j < 0 || k == 3) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, k, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, k, j] = true;
+
                 break;
             }
-            
         }
+
         //Backward Right Up
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int) position.x;
+        j = (int) position.z;
+        k = (int) position.y;
         while (true)
         {
             i++;
             j--;
             k++;
-            if (i == 8 || j < 0 || k == 3)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, k, j];
+            if (i == 8 || j < 0 || k == 3) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, k, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, k, j] = true;
+
                 break;
             }
-            
         }
-        
+
         //Forward Left Down
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int) position.x;
+        j = (int) position.z;
+        k = (int) position.y;
         while (true)
         {
             i--;
             j++;
             k--;
-            if (i < 0 || j == 8 || k < 0)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, k, j];
+            if (i < 0 || j == 8 || k < 0) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, k, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, k, j] = true;
+
                 break;
             }
-            
         }
+
         //Forward Right Down
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int) position.x;
+        j = (int) position.z;
+        k = (int) position.y;
         while (true)
         {
             i++;
             j++;
             k--;
-            if (i == 8 || j == 8 || k < 0)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, k, j];
+            if (i == 8 || j == 8 || k < 0) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, k, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, k, j] = true;
+
                 break;
             }
-            
         }
+
         //Backward Left Down
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int) position.x;
+        j = (int) position.z;
+        k = (int) position.y;
         while (true)
         {
             i--;
             j--;
             k--;
-            if (i < 0 || j < 0 || k < 0)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, k, j];
+            if (i < 0 || j < 0 || k < 0) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, k, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, k, j] = true;
+
                 break;
             }
-            
         }
+
         //Backward Right down
-        i = BoardX;
-        j = BoardZ;
-        k = BoardY;
+        i = (int) position.x;
+        j = (int) position.z;
+        k = (int) position.y;
         while (true)
         {
             i++;
             j--;
             k--;
-            if (i == 8 || j < 0 || k < 0)
-            {
-                break;
-            }
-            
-            c = BoardManager.Instance.Pieces[i, k, j];
+            if (i == 8 || j < 0 || k < 0) break;
+
+            c = BoardManagerReworked.Instance.Pieces[i, k, j];
             if (c == null)
             {
                 r[i, k, j] = true;
             }
-            else 
+            else
             {
-                if (isWhite != c.isWhite)
-                {
-                    r[i, k, j] = true;
-                }
-                
+                if (isWhite != c.isWhite) r[i, k, j] = true;
+
                 break;
             }
-            
         }
-        
+
         return r;
     }
+
     //Helper function checks if place is valid and puts it in the array
     public void RookMove(int x, int y, int z, ref bool[,,] r)
     {
         Piece c;
         if (x >= 0 && x < 8 && z >= 0 && z < 8 && y >= 0 && y < 3)
         {
-            c = BoardManager.Instance.Pieces[x, y, z];
+            c = BoardManagerReworked.Instance.Pieces[x, y, z];
             if (c == null)
-            {
                 r[x, y, z] = true;
-            }
-            else if (isWhite != c.isWhite)
-            {
-                r[x, y, z] = true;
-            }
+            else if (isWhite != c.isWhite) r[x, y, z] = true;
         }
+    }
+
+    public override char GETPieceCode()
+    {
+        if (isWhite)
+            return 'Q';
+        return 'q';
     }
 }

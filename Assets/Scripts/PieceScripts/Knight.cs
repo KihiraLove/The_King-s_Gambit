@@ -1,93 +1,102 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Knight : Piece
 {
-    public override bool[,,] PossibleMove()
+    public override bool[,,] PossibleMove(Piece[,,] positions)
     {
-        bool[,,] r = new bool[8, 3, 8];
-        
+        var r = new bool[8, 3, 8];
+
         //ForwardLeft
-        KnightMove(BoardX-1,BoardY,BoardZ +2,ref r);
-        
+        KnightMove((int) position.x - 1, (int) position.y, (int) position.z + 2,position, ref r,positions);
+
         //ForwardRight
-        KnightMove(BoardX+1,BoardY,BoardZ +2,ref r);
-        
+        KnightMove((int) position.x + 1, (int) position.y, (int) position.z + 2, position, ref r,positions);
+
         //LeftForward
-        KnightMove(BoardX-2,BoardY,BoardZ +1,ref r);
-        
+        KnightMove((int) position.x - 2, (int) position.y, (int) position.z + 1, position, ref r,positions);
+
         //LeftBackward
-        KnightMove(BoardX-2,BoardY,BoardZ -1,ref r);
-        
+        KnightMove((int) position.x - 2, (int) position.y, (int) position.z - 1, position, ref r,positions);
+
         //BackwardLeft
-        KnightMove(BoardX-1,BoardY,BoardZ -2,ref r);
-        
+        KnightMove((int) position.x - 1, (int) position.y, (int) position.z - 2, position, ref r,positions);
+
         //BackwardRight
-        KnightMove(BoardX+1,BoardY,BoardZ -2,ref r);
-        
+        KnightMove((int) position.x + 1, (int) position.y, (int) position.z - 2, position, ref r,positions);
+
         //RightForward
-        KnightMove(BoardX+2,BoardY,BoardZ +1,ref r);
-        
+        KnightMove((int) position.x + 2, (int) position.y, (int) position.z + 1, position, ref r,positions);
+
         //RightBackward
-        KnightMove(BoardX+2,BoardY,BoardZ -1,ref r);
+        KnightMove((int) position.x + 2, (int) position.y, (int) position.z - 1, position, ref r,positions);
 
         //ForwardUp
-        KnightMove(BoardX,BoardY +1,BoardZ+2,ref r);
+        KnightMove((int) position.x, (int) position.y + 1, (int) position.z + 2, position, ref r,positions);
         //RightUp
-        KnightMove(BoardX + 2,BoardY +1,BoardZ,ref r);
+        KnightMove((int) position.x + 2, (int) position.y + 1, (int) position.z, position, ref r,positions);
         //LeftUp
-        KnightMove(BoardX - 2,BoardY +1,BoardZ,ref r);
+        KnightMove((int) position.x - 2, (int) position.y + 1, (int) position.z, position, ref r,positions);
         //BackwardUp
-        KnightMove(BoardX,BoardY +1,BoardZ-2,ref r);
-        
+        KnightMove((int) position.x, (int) position.y + 1, (int) position.z - 2, position, ref r,positions);
+
         //ForwardDown
-        KnightMove(BoardX,BoardY -1,BoardZ+2,ref r);
+        KnightMove((int) position.x, (int) position.y - 1, (int) position.z + 2, position, ref r,positions);
         //RightDown
-        KnightMove(BoardX + 2,BoardY -1,BoardZ,ref r);
+        KnightMove((int) position.x + 2, (int) position.y - 1, (int) position.z, position, ref r,positions);
         //LeftDown
-        KnightMove(BoardX - 2,BoardY -1,BoardZ,ref r);
+        KnightMove((int) position.x - 2, (int) position.y - 1, (int) position.z, position, ref r,positions);
         //BackwardDown
-        KnightMove(BoardX,BoardY -1,BoardZ-2,ref r);
-        
+        KnightMove((int) position.x, (int) position.y - 1, (int) position.z - 2, position, ref r,positions);
+
         //ForwardUp2
-        KnightMove(BoardX,BoardY +2,BoardZ+1,ref r);
+        KnightMove((int) position.x, (int) position.y + 2, (int) position.z + 1, position, ref r,positions);
         //RightUp2
-        KnightMove(BoardX + 1,BoardY +2,BoardZ,ref r);
+        KnightMove((int) position.x + 1, (int) position.y + 2, (int) position.z, position, ref r,positions);
         //LeftUp2
-        KnightMove(BoardX - 1,BoardY +2,BoardZ,ref r);
+        KnightMove((int) position.x - 1, (int) position.y + 2, (int) position.z, position, ref r,positions);
         //BackwardUp2
-        KnightMove(BoardX,BoardY +2,BoardZ-1,ref r);
-        
+        KnightMove((int) position.x, (int) position.y + 2, (int) position.z - 1, position, ref r,positions);
+
         //ForwardDown2
-        KnightMove(BoardX,BoardY -2,BoardZ+1,ref r);
+        KnightMove((int) position.x, (int) position.y - 2, (int) position.z + 1, position, ref r,positions);
         //RightDown2
-        KnightMove(BoardX + 1,BoardY -2,BoardZ,ref r);
+        KnightMove((int) position.x + 1, (int) position.y - 2, (int) position.z, position, ref r,positions);
         //LeftDown2
-        KnightMove(BoardX - 1,BoardY -2,BoardZ,ref r);
+        KnightMove((int) position.x - 1, (int) position.y - 2, (int) position.z, position, ref r,positions);
         //BackwardDown2
-        KnightMove(BoardX,BoardY -2,BoardZ-1,ref r);
-        
-        
+        KnightMove((int) position.x, (int) position.y - 2, (int) position.z - 1, position, ref r,positions);
+
+
         return r;
     }
 
     //Helper function checks if place is valid and puts it in the array
-    public void KnightMove(int x, int y, int z, ref bool[,,] r)
+    public void KnightMove(int nX,int nY,int nZ,Vector3 oldPos, ref bool[,,] r,Piece[,,] positions)
     {
-        Piece c;
-        if (x >= 0 && x < 8 && z >= 0 && z < 8 && y >= 0 && y < 3)
+
+        Vector3 newPos = new Vector3(nX,nY,nZ);
+        if (ValidPos(newPos))
         {
-            c = BoardManager.Instance.Pieces[x, y, z];
+            Piece c = BoardManagerReworked.Instance.Pieces[nX, nY, nZ];
             if (c == null)
             {
-                r[x, y, z] = true;
+                r[nX, nY, nZ] = true;
+                
+                
             }
             else if (isWhite != c.isWhite)
             {
-                r[x, y, z] = true;
+                r[nX, nY, nZ] = true;
+                
             }
         }
+        
+    }
+
+    public override char GETPieceCode()
+    {
+        if (isWhite)
+            return 'N';
+        return 'n';
     }
 }
-

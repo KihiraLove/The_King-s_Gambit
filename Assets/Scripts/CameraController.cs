@@ -17,9 +17,7 @@ public class CameraController : MonoBehaviour
     private void Start()
     {
         // Initialize the correct initial rotation
-        var eulerAngles = transform.eulerAngles;
-        _yaw = eulerAngles.y;
-        _pitch = eulerAngles.x;
+        UpdateRotation();
     }
 
     private void Update()
@@ -42,5 +40,20 @@ public class CameraController : MonoBehaviour
 
         //Zoom in and out with Mouse Wheel
         transform.Translate(0, 0, Input.GetAxis("Mouse ScrollWheel") * zoomSpeed, Space.Self);
+    }
+
+    public void Recenter()
+    {
+        transform.position = new Vector3(3.5f, 8f, -9f);
+        transform.rotation = Quaternion.identity;
+
+        UpdateRotation();
+    }
+
+    private void UpdateRotation()
+    {
+        var eulerAngles = transform.eulerAngles;
+        _yaw = eulerAngles.y;
+        _pitch = eulerAngles.x;
     }
 }

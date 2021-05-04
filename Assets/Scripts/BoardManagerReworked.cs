@@ -83,6 +83,17 @@ public class BoardManagerReworked : MonoBehaviour
         UpdateSelection();
     }
 
+    public void FocusOnBoard(int boardNum)
+    {
+        //R(0),3,K(0),2,R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),3,k(0),2,r(0),\nb
+        //^example
+        //TODO: delete this later
+        String currentState = GETBoardState();
+        String [] boards = currentState.Split('\n');
+        
+
+    }
+
     private void Initialize()
     {
         Instance = this;

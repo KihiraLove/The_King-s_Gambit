@@ -8,7 +8,7 @@ public class BoardManagerReworked : MonoBehaviour
     public Vector3 board1Offset;
     public Vector3 board2Offset;
     public Vector3 board3Offset;
-
+    
     public bool whiteTurn;
 
     public List<GameObject> chessPiecePrefabs;
@@ -45,7 +45,7 @@ public class BoardManagerReworked : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1) && !Input.GetMouseButton(2) && Input.mouseScrollDelta.y == 0)
             //print(mousePosition);
             if (mousePosition.x > -98)
             {

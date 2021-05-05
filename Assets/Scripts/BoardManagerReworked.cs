@@ -24,7 +24,7 @@ public class BoardManagerReworked : MonoBehaviour
     public bool[,,] allowedMoves = new bool[8, 3, 8];
 
     private string startBoardState =
-        "R(0),N(0),B(0),Q(0),K(0),B(0),N(0),R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),n(0),b(0),q(0),k(0),b(0),n(0),r(0),\nw";
+        "R(0),N(0),B(0),Q(0),K(0),B(0),N(0),R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),n(0),b(0),q(0),k(0),b(0),n(0),r(0)\nw";
 
     public static BoardManagerReworked Instance { set; get; }
     public Piece[,,] Pieces { set; get; }
@@ -32,7 +32,7 @@ public class BoardManagerReworked : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        //startBoardState = "R(0),3,K(0),2,R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),3,k(0),2,r(0),\nb";
+        //startBoardState = "R(0),3,K(0),2,R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),3,k(0),2,r(0)\nb";
         allowedMoves = new bool[8, 3, 8];
         Initialize();
         PlayerPrefs.SetString("boardState", startBoardState);
@@ -85,13 +85,66 @@ public class BoardManagerReworked : MonoBehaviour
 
     public void FocusOnBoard(int boardNum)
     {
-        //R(0),3,K(0),2,R(0)/P(0),P(0),P(0),P(0),P(0),P(0),P(0),P(0)/8/8/8/8/8/8\n8/8/8/8/8/8/8/8\n8/8/8/8/8/8/p(0),p(0),p(0),p(0),p(0),p(0),p(0),p(0),/r(0),3,k(0),2,r(0),\nb
-        //^example
-        //TODO: delete this later
         String currentState = GETBoardState();
         String [] boards = currentState.Split('\n');
-        
 
+        switch (boardNum)
+        {
+            case 0:
+                SetPieceOpacityOnBoard(boards[1], 1);
+                SetPieceOpacityOnBoard(boards[2], 2);
+                break;
+            case 1:
+                SetPieceOpacityOnBoard(boards[0], 0);
+                SetPieceOpacityOnBoard(boards[2], 2);
+                break;
+            case 2:
+                SetPieceOpacityOnBoard(boards[0], 0);
+                SetPieceOpacityOnBoard(boards[1], 1);
+                break;
+            default:
+                Debug.Log("Board Focus switch statement broke!");
+                break;
+        }
+    }
+
+    private void SetPieceOpacityOnBoard(String boardState, int boardNum)
+    {
+        int rowCount = 0;
+        foreach (String rowState in boardState.Split('/'))
+        {
+            SetPieceOpacityOnRow(rowState, rowCount, boardNum);
+            rowCount++;
+        }
+    }
+
+    private void SetPieceOpacityOnRow(String rowState, int rowCount, int boardNum)
+    {
+        int squareCount = 0;
+        foreach (String squareState in rowState.Split(','))
+        {
+            if (squareState.Length > 1)
+            {
+                SetPieceOpacityToHalf(squareCount, rowCount, boardNum);
+            }
+            else if (squareState.Length >= 1 && char.IsDigit(squareState[0]))
+            {
+                squareCount += int.Parse(squareState);
+            }
+            else
+            {
+                Debug.Log("SetPieceOpacityOnRow() broke!");
+            }
+        }
+    }
+
+    private void SetPieceOpacityToHalf(int squareCount, int rowCount, int boardNum)
+    {
+        Shader spritesDefault = Shader.Find("Sprites/Default");
+        var piece = GetPiece(new Vector3(rowCount, 0, squareCount) + GETBoardOffSet(boardNum));
+        Color old = piece.GetComponent<Renderer>().material.color;
+        piece.GetComponent<Renderer>().material.shader = spritesDefault;
+        piece.GetComponent<Renderer>().material.SetColor("_Color", new Color(old.r, old.g, old.b, 0.3f));
     }
 
     private void Initialize()

@@ -141,7 +141,7 @@ public class BoardManagerReworked : MonoBehaviour
     private void SetPieceOpacityToHalf(int squareCount, int rowCount, int boardNum)
     {
         Shader spritesDefault = Shader.Find("Sprites/Default");
-        var piece = GetPiece(new Vector3(rowCount, 0, squareCount) + GETBoardOffSet(boardNum));
+        var piece = GetPiece(new Vector3(squareCount, 0, rowCount) + GETBoardOffSet(boardNum));
         Color old = piece.GetComponent<Renderer>().material.color;
         piece.GetComponent<Renderer>().material.shader = spritesDefault;
         piece.GetComponent<Renderer>().material.SetColor("_Color", new Color(old.r, old.g, old.b, 0.3f));

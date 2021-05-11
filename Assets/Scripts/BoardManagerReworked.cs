@@ -2,14 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BoardManagerReworked : MonoBehaviour
 {
     public Vector3 board1Offset;
     public Vector3 board2Offset;
     public Vector3 board3Offset;
+
+    private GameObject _board1;
+    private GameObject _board2;
+    private GameObject _board3;
     
     public bool whiteTurn;
+    private bool _isFocused = false;
 
     public List<GameObject> chessPiecePrefabs;
     public GameObject chessBoardPrefab;
@@ -46,7 +52,12 @@ public class BoardManagerReworked : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1) && !Input.GetMouseButton(2) && Input.mouseScrollDelta.y == 0)
+        if (Input.GetMouseButtonDown(0)
+            && !Input.GetMouseButton(1)
+            && !Input.GetMouseButton(2)
+            && Input.mouseScrollDelta.y == 0
+            && _isFocused == false)
+        {
             //print(mousePosition);
             if (mousePosition.x > -98)
             {
@@ -76,6 +87,7 @@ public class BoardManagerReworked : MonoBehaviour
                     BoardHighlights.Instance.HideHighlights();
                 }
             }
+        }
     }
 
     private void FixedUpdate()
@@ -85,47 +97,66 @@ public class BoardManagerReworked : MonoBehaviour
 
     public void FocusOnBoard(int boardNum)
     {
-        String currentState = GETBoardState();
-        String [] boards = currentState.Split('\n');
-
-        switch (boardNum)
+        if (!_isFocused)
         {
-            case 0:
-                SetPieceOpacityOnBoard(boards[1], 1);
-                SetPieceOpacityOnBoard(boards[2], 2);
-                break;
-            case 1:
-                SetPieceOpacityOnBoard(boards[0], 0);
-                SetPieceOpacityOnBoard(boards[2], 2);
-                break;
-            case 2:
-                SetPieceOpacityOnBoard(boards[0], 0);
-                SetPieceOpacityOnBoard(boards[1], 1);
-                break;
-            default:
-                Debug.Log("Board Focus switch statement broke!");
-                break;
+            String currentState = GETBoardState();
+            String[] boards = currentState.Split('\n');
+
+            switch (boardNum)
+            {
+                case 0:
+                    SetPieceOpacityOnBoard(boards[1], 1, false);
+                    SetBoardOpacityToHalf(1);
+                    SetPieceOpacityOnBoard(boards[2], 2, false);
+                    SetBoardOpacityToHalf(2);
+                    break;
+                case 1:
+                    SetPieceOpacityOnBoard(boards[0], 0, false);
+                    SetBoardOpacityToHalf(0);
+                    SetPieceOpacityOnBoard(boards[2], 2, false);
+                    SetBoardOpacityToHalf(2);
+                    break;
+                case 2:
+                    SetPieceOpacityOnBoard(boards[0], 0, false);
+                    SetBoardOpacityToHalf(0);
+                    SetPieceOpacityOnBoard(boards[1], 1, false);
+                    SetBoardOpacityToHalf(1);
+                    break;
+                default:
+                    Debug.Log("Board Focus switch statement broke!");
+                    break;
+            }
+            _isFocused = true;
         }
     }
 
-    private void SetPieceOpacityOnBoard(String boardState, int boardNum)
+    private void SetPieceOpacityOnBoard(String boardState, int boardNum, bool isReset)
     {
         int rowCount = 0;
         foreach (String rowState in boardState.Split('/'))
         {
-            SetPieceOpacityOnRow(rowState, rowCount, boardNum);
+            SetPieceOpacityOnRow(rowState, rowCount, boardNum, isReset);
             rowCount++;
         }
     }
 
-    private void SetPieceOpacityOnRow(String rowState, int rowCount, int boardNum)
+    private void SetPieceOpacityOnRow(String rowState, int rowCount, int boardNum, bool isReset)
     {
         int squareCount = 0;
         foreach (String squareState in rowState.Split(','))
         {
             if (squareState.Length > 1)
             {
-                SetPieceOpacityToHalf(squareCount, rowCount, boardNum);
+                if (!isReset)
+                {
+                    SetPieceOpacityToHalf(squareCount, rowCount, boardNum);
+                    
+                }
+                else
+                {
+                    ResetPieceOpacity(squareCount, rowCount, boardNum);
+                }
+                squareCount++;
             }
             else if (squareState.Length >= 1 && char.IsDigit(squareState[0]))
             {
@@ -140,11 +171,112 @@ public class BoardManagerReworked : MonoBehaviour
 
     private void SetPieceOpacityToHalf(int squareCount, int rowCount, int boardNum)
     {
+        try
+        {
+            Shader spritesDefault = Shader.Find("Sprites/Default");
+            var piece = GetPiece(new Vector3(squareCount, boardNum, rowCount));
+            Color old = piece.GetComponent<Renderer>().material.color;
+            piece.GetComponent<Renderer>().material.shader = spritesDefault;
+            piece.GetComponent<Renderer>().material.SetColor("_Color", new Color(old.r, old.g, old.b, 0.3f));
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error at coordinate : " + e);
+        }
+    }
+
+    private void ResetPieceOpacity(int squareCount, int rowCount, int boardNum)
+    {
+        try
+        {
+            Shader spritesStandard = Shader.Find("Standard");
+            var piece = GetPiece(new Vector3(squareCount, boardNum, rowCount));
+            Color old = piece.GetComponent<Renderer>().material.color;
+            piece.GetComponent<Renderer>().material.shader = spritesStandard;
+            piece.GetComponent<Renderer>().material.SetColor("_Color", new Color(old.r, old.g, old.b, 1f));
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error at coordinate : " + e);
+        }
+    }
+
+    private void SetBoardOpacityToHalf(int boardNum)
+    {
         Shader spritesDefault = Shader.Find("Sprites/Default");
-        var piece = GetPiece(new Vector3(squareCount, 0, rowCount) + GETBoardOffSet(boardNum));
-        Color old = piece.GetComponent<Renderer>().material.color;
-        piece.GetComponent<Renderer>().material.shader = spritesDefault;
-        piece.GetComponent<Renderer>().material.SetColor("_Color", new Color(old.r, old.g, old.b, 0.3f));
+        switch (boardNum)
+        {
+            case 0:
+                Color oldDark0 = _board1.GetComponent<Renderer>().materials[0].color;
+                _board1.GetComponent<Renderer>().materials[0].shader = spritesDefault;
+                _board1.GetComponent<Renderer>().materials[0].SetColor("_Color", new Color(oldDark0.r, oldDark0.g, oldDark0.b, 0.3f));
+                
+                Color oldLight0 = _board1.GetComponent<Renderer>().materials[1].color;
+                _board1.GetComponent<Renderer>().materials[1].shader = spritesDefault;
+                _board1.GetComponent<Renderer>().materials[1].SetColor("_Color", new Color(oldLight0.r, oldLight0.g, oldLight0.b, 0.3f));
+                break;
+            case 1:
+                Color oldDark1 = _board2.GetComponent<Renderer>().materials[0].color;
+                _board2.GetComponent<Renderer>().materials[0].shader = spritesDefault;
+                _board2.GetComponent<Renderer>().materials[0].SetColor("_Color", new Color(oldDark1.r, oldDark1.g, oldDark1.b, 0.3f));
+                
+                Color oldLight1 = _board2.GetComponent<Renderer>().materials[1].color;
+                _board2.GetComponent<Renderer>().materials[1].shader = spritesDefault;
+                _board2.GetComponent<Renderer>().materials[1].SetColor("_Color", new Color(oldLight1.r, oldLight1.g, oldLight1.b, 0.3f));
+                break;
+            case 2:
+                Color oldDark2 = _board3.GetComponent<Renderer>().materials[0].color;
+                _board3.GetComponent<Renderer>().materials[0].shader = spritesDefault;
+                _board3.GetComponent<Renderer>().materials[0].SetColor("_Color", new Color(oldDark2.r, oldDark2.g, oldDark2.b, 0.3f));
+                
+                Color oldLight2 = _board3.GetComponent<Renderer>().materials[1].color;
+                _board3.GetComponent<Renderer>().materials[1].shader = spritesDefault;
+                _board3.GetComponent<Renderer>().materials[1].SetColor("_Color", new Color(oldLight2.r, oldLight2.g, oldLight2.b, 0.3f));
+                break;
+        }
+    }
+
+    private void ResetBoardOpacity()
+    {
+        Shader spritesDefault = Shader.Find("Standard");
+        
+        Color oldBoardDark1 = _board1.GetComponent<Renderer>().materials[0].color;
+        _board1.GetComponent<Renderer>().materials[0].shader = spritesDefault;
+        _board1.GetComponent<Renderer>().materials[0].SetColor("_Color", new Color(oldBoardDark1.r, oldBoardDark1.g, oldBoardDark1.b, 1f));
+        
+        Color oldBoardLight1 = _board1.GetComponent<Renderer>().materials[1].color;
+        _board1.GetComponent<Renderer>().materials[1].shader = spritesDefault;
+        _board1.GetComponent<Renderer>().materials[1].SetColor("_Color", new Color(oldBoardLight1.r, oldBoardLight1.g, oldBoardLight1.b, 1f));
+        
+        Color oldBoardDark2 = _board2.GetComponent<Renderer>().materials[0].color;
+        _board2.GetComponent<Renderer>().materials[0].shader = spritesDefault;
+        _board2.GetComponent<Renderer>().materials[0].SetColor("_Color", new Color(oldBoardDark2.r, oldBoardDark2.g, oldBoardDark2.b, 1f));
+        
+        Color oldBoardLight2 = _board2.GetComponent<Renderer>().materials[1].color;
+        _board2.GetComponent<Renderer>().materials[1].shader = spritesDefault;
+        _board2.GetComponent<Renderer>().materials[1].SetColor("_Color", new Color(oldBoardLight2.r, oldBoardLight2.g, oldBoardLight2.b, 1f));
+        
+        Color oldBoardDark3 = _board3.GetComponent<Renderer>().materials[0].color;
+        _board3.GetComponent<Renderer>().materials[0].shader = spritesDefault;
+        _board3.GetComponent<Renderer>().materials[0].SetColor("_Color", new Color(oldBoardDark3.r, oldBoardDark3.g, oldBoardDark3.b, 1f));
+        
+        Color oldBoardLight3 = _board3.GetComponent<Renderer>().materials[1].color;
+        _board3.GetComponent<Renderer>().materials[1].shader = spritesDefault;
+        _board3.GetComponent<Renderer>().materials[1].SetColor("_Color", new Color(oldBoardLight3.r, oldBoardLight3.g, oldBoardLight3.b, 1f));
+        
+    }
+
+    public void ResetBoardFocus()
+    {
+        String currentState = GETBoardState();
+        String [] boards = currentState.Split('\n');
+        SetPieceOpacityOnBoard(boards[0], 0, true);
+        SetPieceOpacityOnBoard(boards[1], 1, true);
+        SetPieceOpacityOnBoard(boards[2], 2, true);
+        ResetBoardOpacity();
+        _isFocused = false;
     }
 
     private void Initialize()
@@ -205,16 +337,16 @@ public class BoardManagerReworked : MonoBehaviour
 
     private void SpawnBoards()
     {
-        var board1 = Instantiate(chessBoardPrefab, board1Offset, Quaternion.identity);
-        board1.transform.SetParent(transform);
-        var board2 = Instantiate(chessBoardPrefab, board2Offset, Quaternion.identity);
-        board2.transform.SetParent(transform);
-        var board3 = Instantiate(chessBoardPrefab, board3Offset, Quaternion.identity);
-        board3.transform.SetParent(transform);
+        _board1 = Instantiate(chessBoardPrefab, board1Offset, Quaternion.identity);
+        _board1.transform.SetParent(transform);
+        _board2 = Instantiate(chessBoardPrefab, board2Offset, Quaternion.identity);
+        _board2.transform.SetParent(transform);
+        _board3 = Instantiate(chessBoardPrefab, board3Offset, Quaternion.identity);
+        _board3.transform.SetParent(transform);
 
-        board1.GetComponent<BoardData>().boardNumber = 1;
-        board2.GetComponent<BoardData>().boardNumber = 2;
-        board3.GetComponent<BoardData>().boardNumber = 3;
+        _board1.GetComponent<BoardData>().boardNumber = 1;
+        _board2.GetComponent<BoardData>().boardNumber = 2;
+        _board3.GetComponent<BoardData>().boardNumber = 3;
     }
 
     private void SpawnPiece(int index, Vector3 position, int board, int moveTurn)
@@ -254,7 +386,7 @@ public class BoardManagerReworked : MonoBehaviour
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            throw new Exception(position.ToString());
         }
     }
 
@@ -365,7 +497,7 @@ public class BoardManagerReworked : MonoBehaviour
         oX = (int) oldPosition.x;
         oY = (int) oldPosition.y;
         oZ = (int) oldPosition.z;
-        int x, y, z;
+        //int x, y, z;
         int nX, nY, nZ;
         nX = (int) newPosition.x;
         nY = (int) newPosition.y;

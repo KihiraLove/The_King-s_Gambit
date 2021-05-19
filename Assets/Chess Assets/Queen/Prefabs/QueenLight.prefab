@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 23714218359197728}
   - component: {fileID: -41673337272813343}
   - component: {fileID: 1493661741308029096}
+  - component: {fileID: -789074777456612712}
   m_Layer: 8
   m_Name: QueenLight
   m_TagString: Untagged
@@ -93,6 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03aa835ef943dde4cac85b0416b5e9c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roundMoved: 0
+  position: {x: 0, y: 0, z: 0}
   isWhite: 1
 --- !u!64 &1493661741308029096
 MeshCollider:
@@ -108,3 +111,22 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 8d213db23e89f6b4fa3d427f07a32b13, type: 3}
+--- !u!95 &-789074777456612712
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1945632463053948}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c1378973baf601e4090b38d94be78a45, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -6,6 +7,18 @@ using UnityEngine.UI;
 
 public class BoardManagerReworked : MonoBehaviour
 {
+    Animator anim;
+
+    public Animator animTeleport;
+    public Animator animDisappear;
+
+    public float timeOfDisappear;
+
+    public Vector3 delayedSelectedPiecePosition;
+    public Vector3 delayedPosition;
+    public int delayedMousePositionY;
+    public bool delayScheduled = false;
+
     public Vector3 board1Offset;
     public Vector3 board2Offset;
     public Vector3 board3Offset;
@@ -52,12 +65,31 @@ public class BoardManagerReworked : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+
+        Debug.Log("delayScheduled: " + delayScheduled.ToString());
+        if (delayScheduled)
+        {
+            Debug.Log("Time.time - timeOfDisappear: " + (Time.time - timeOfDisappear).ToString());
+        }
+        if (Time.time - timeOfDisappear >= 1 && delayScheduled)
+        {
+            MovePiece(delayedSelectedPiecePosition, delayedPosition, delayedMousePositionY);
+            _selectedPiece = null;
+            roundNumber++;
+            BoardHighlights.Instance.HideHighlights();
+
+            Show();
+
+            delayScheduled = false;
+        }
+        
         if (Input.GetMouseButtonDown(0)
             && !Input.GetMouseButton(1)
             && !Input.GetMouseButton(2)
             && Input.mouseScrollDelta.y == 0
             && _isFocused == false)
         {
+
             //print(mousePosition);
             if (mousePosition.x > -98)
             {
@@ -71,14 +103,12 @@ public class BoardManagerReworked : MonoBehaviour
                          (GetPiece(mousePosition) == null || GetPiece(mousePosition).isWhite != whiteTurn))
                 {
                     //Move;
-                    if (allowedMoves[(int) mousePosition.x, (int) mousePosition.y, (int) mousePosition.z])
+                    if (allowedMoves[(int) mousePosition.x, (int) mousePosition.y, (int) mousePosition.z] && delayScheduled == false)
                     {
-                        MovePiece(_selectedPiece.position,
-                            new Vector3(mousePosition.x, mousePosition.y, mousePosition.z), (int) mousePosition.y);
-                        _selectedPiece = null;
-                        roundNumber++;
-                        BoardHighlights.Instance.HideHighlights();
-                        PlayerPrefs.SetString("boardState", GETBoardState());
+                        animTeleport = _selectedPiece.GetComponent<Animator>();
+                        Hide();
+
+                        SetDelayedMove(_selectedPiece.position, new Vector3(mousePosition.x, mousePosition.y, mousePosition.z), (int)mousePosition.y);
                     }
                 }
                 else
@@ -89,6 +119,18 @@ public class BoardManagerReworked : MonoBehaviour
             }
         }
     }
+
+    
+
+    private void SetDelayedMove(Vector3 _delayedSelectedPiecePosition, Vector3 _delayedPosition, int _delayedMousePositionY)
+    {
+        delayedSelectedPiecePosition = _delayedSelectedPiecePosition;
+        delayedPosition = _delayedPosition;
+        delayedMousePositionY = _delayedMousePositionY;
+
+        delayScheduled = true;
+    }
+
 
     private void FixedUpdate()
     {
@@ -282,6 +324,7 @@ public class BoardManagerReworked : MonoBehaviour
     private void Initialize()
     {
         Instance = this;
+        
         SpawnBoards();
         SpawnAllPieces();
         //Debug.Log(GETBoardState());
@@ -332,6 +375,12 @@ public class BoardManagerReworked : MonoBehaviour
 
         //Select the piece and show the allowed moves
         _selectedPiece = selectedPiece;
+
+        
+
+
+
+
         BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves, board1Offset, board2Offset, board3Offset);
     }
 
@@ -351,6 +400,8 @@ public class BoardManagerReworked : MonoBehaviour
 
     private void SpawnPiece(int index, Vector3 position, int board, int moveTurn)
     {
+        
+
         Quaternion orientation;
         if (index <= 5)
             orientation = Quaternion.Euler(0, 180, 0);
@@ -405,7 +456,7 @@ public class BoardManagerReworked : MonoBehaviour
 
     private void MovePiece(Vector3 oldPosition, Vector3 newPosition, int board)
     {
-        var PiecesCopy = (Piece[,,]) Pieces.Clone();
+        var PiecesCopy = (Piece[,,])Pieces.Clone();
 
         var oldP = GetPiece(newPosition);
         if (oldP != null)
@@ -422,8 +473,12 @@ public class BoardManagerReworked : MonoBehaviour
             }
         }
 
-        
         ref var newP = ref GetPiece(oldPosition);
+
+        
+
+             
+
         newP.roundMoved = roundNumber;
         if (char.ToUpper(newP.GETPieceCode()).Equals('P'))
         {
@@ -440,31 +495,81 @@ public class BoardManagerReworked : MonoBehaviour
         {
             CastleMove(oldPosition, newPosition);
         }
-        
-        
 
         var newPos = new Vector3(newPosition.x, 0, newPosition.z);
-        switch (board)
-        {
-            case 0:
-                newP.transform.position = newPos + board1Offset;
-                break;
-            case 1:
-                newP.transform.position = newPos + board2Offset;
-                break;
-            case 2:
-                newP.transform.position = newPos + board3Offset;
-                break;
-        }
 
-        //newP.roundMoved = roundNumber;
-        newP.SetPosition(new Vector3(newPosition.x, board, newPosition.z));
-        SetPiece(new Vector3(newPosition.x, board, newPosition.z), ref newP);
-        Pieces[(int) oldPosition.x, (int) oldPosition.y, (int) oldPosition.z] = null;
-        whiteTurn = !whiteTurn;
-        BoardHighlights.Instance.HideHighlights();
 
+        
+            switch (board)
+            {
+                case 0:
+                    newP.transform.position = newPos + board1Offset;
+                    break;
+                case 1:
+                    newP.transform.position = newPos + board2Offset;
+                    break;
+                case 2:
+                    newP.transform.position = newPos + board3Offset;
+                    break;
+            }
+
+            //newP.roundMoved = roundNumber;
+
+
+            newP.SetPosition(new Vector3(newPosition.x, board, newPosition.z));
+            SetPiece(new Vector3(newPosition.x, board, newPosition.z), ref newP);
+
+            Pieces[(int)oldPosition.x, (int)oldPosition.y, (int)oldPosition.z] = null;
+            whiteTurn = !whiteTurn;
+            BoardHighlights.Instance.HideHighlights();
+        
     }
+
+
+    private void Hide() 
+    {
+        StartCoroutine(HideCoroutine());
+    }
+
+    IEnumerator HideCoroutine()
+    {
+        //Print the time of when the function is first called.
+        Debug.Log("Started DisappearCoroutine at timestamp : " + Time.time);
+
+        animTeleport.SetTrigger("Hide");
+        timeOfDisappear = Time.time;
+        Debug.Log("timeOfDisappear: " + timeOfDisappear.ToString());
+        Debug.Log("Hide");
+
+        //yield on a new YieldInstruction that waits for 5 seconds.
+        yield return new WaitForSeconds(5);
+
+        //After we have waited 5 seconds print the time again.
+        Debug.Log("Finished DisappearCoroutine at timestamp : " + Time.time);
+    }
+
+    
+
+    private void Show()
+    {
+        StartCoroutine(ShowCoroutine());
+    }
+
+    IEnumerator ShowCoroutine()
+    {
+        //Print the time of when the function is first called.
+        Debug.Log("Started ShowCoroutine at timestamp : " + Time.time);
+
+
+        animTeleport.SetTrigger("Show");
+        Debug.Log("Show");
+        //yield on a new YieldInstruction that waits for 5 seconds.
+        yield return new WaitForSeconds(5);
+
+        //After we have waited 5 seconds print the time again.
+        Debug.Log("Finished ReappearCoroutine at timestamp : " + Time.time);
+    }
+
 
     private void CastleMove(Vector3 kingPos,Vector3 newPos)
     {

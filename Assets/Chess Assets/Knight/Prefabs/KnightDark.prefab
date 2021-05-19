@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 23939737083662754}
   - component: {fileID: -2699806406981399796}
   - component: {fileID: -4818589460710852265}
+  - component: {fileID: -5257175700737317882}
   m_Layer: 8
   m_Name: KnightDark
   m_TagString: Untagged
@@ -93,6 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a33304941ad24c41a549f92a0617eaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roundMoved: 0
+  position: {x: 0, y: 0, z: 0}
   isWhite: 0
 --- !u!64 &-4818589460710852265
 MeshCollider:
@@ -108,3 +111,22 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 3d375d4a1907b3f4098bb64446492fed, type: 3}
+--- !u!95 &-5257175700737317882
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179637952412708}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c1378973baf601e4090b38d94be78a45, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

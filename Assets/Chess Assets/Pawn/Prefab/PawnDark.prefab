@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 23288229226541454}
   - component: {fileID: -1878369973084511515}
   - component: {fileID: -4683642968212240490}
+  - component: {fileID: 4307838803608368993}
   m_Layer: 8
   m_Name: PawnDark
   m_TagString: Untagged
@@ -93,7 +94,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6d060bf3c1da734daaf94c3bc079579, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roundMoved: 0
+  position: {x: 0, y: 0, z: 0}
   isWhite: 0
+  doubleMoved: 0
 --- !u!64 &-4683642968212240490
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -108,3 +112,22 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 1ae3b6cad3254b848942cea678f244c7, type: 3}
+--- !u!95 &4307838803608368993
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1867195236767680}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c1378973baf601e4090b38d94be78a45, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

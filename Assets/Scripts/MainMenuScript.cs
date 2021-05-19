@@ -15,4 +15,9 @@ public class MainMenuScript : MonoBehaviour
         // Quit Game
         Application.Quit();
     }
+
+    public void ExitButton()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
+    }
 }

@@ -20,6 +20,7 @@
       <Path>MonoBleedingEdge</Path>
       <Path>Temp</Path>
       <Path>The King's Gambit_Data</Path>
+      <Path>UIElementsSchema</Path>
       <Path>obj</Path>
     </explicitExcludes>
   </component>

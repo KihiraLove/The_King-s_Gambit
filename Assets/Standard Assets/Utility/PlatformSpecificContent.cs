@@ -1,4 +1,4 @@
-using UnityEditor.Build;
+//using UnityEditor.Build;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,9 +13,9 @@ namespace UnityStandardAssets.Utility
     [ExecuteInEditMode]
 #endif
     public class PlatformSpecificContent : MonoBehaviour
-#if UNITY_EDITOR
-        , IActiveBuildTargetChanged
-#endif
+//#if UNITY_EDITOR
+//        , IActiveBuildTargetChanged
+//#endif
     {
         private enum BuildTargetGroup
         {

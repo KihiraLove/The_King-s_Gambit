@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 23923637149797032}
   - component: {fileID: -1852443599447320387}
   - component: {fileID: 4130531019762166440}
+  - component: {fileID: -830070526781320619}
   m_Layer: 8
   m_Name: RookLight
   m_TagString: Untagged
@@ -93,6 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b7b2be155a33ef4da4f14db61e6d682, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roundMoved: 0
+  position: {x: 0, y: 0, z: 0}
   isWhite: 1
 --- !u!64 &4130531019762166440
 MeshCollider:
@@ -108,3 +111,22 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 4c7fefe9f4d55e44398c01a6266ef093, type: 3}
+--- !u!95 &-830070526781320619
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1971375302472462}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c1378973baf601e4090b38d94be78a45, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

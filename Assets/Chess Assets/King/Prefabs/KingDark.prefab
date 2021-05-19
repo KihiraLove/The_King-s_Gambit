@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 23106028074910512}
   - component: {fileID: -2927442482625028181}
   - component: {fileID: 194044882015127247}
+  - component: {fileID: 5433762762942026011}
   m_Layer: 8
   m_Name: KingDark
   m_TagString: Untagged
@@ -93,7 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f732f859342691d4a8f5a54581861223, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasMoved: 0
+  roundMoved: 0
+  position: {x: 0, y: 0, z: 0}
   isWhite: 0
 --- !u!64 &194044882015127247
 MeshCollider:
@@ -109,3 +111,22 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 0d4dc18442ed9d14698239a5a964f27f, type: 3}
+--- !u!95 &5433762762942026011
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810274083847610}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c1378973baf601e4090b38d94be78a45, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
